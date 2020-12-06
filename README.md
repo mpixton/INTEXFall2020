@@ -1,2 +1,2 @@
 # INTEXFall2020
-INTEX Fall 2020 application
+INTEX Fall 2020 web application
