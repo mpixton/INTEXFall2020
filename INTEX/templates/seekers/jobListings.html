@@ -11,10 +11,13 @@
     <form>
         <div class="form-row">
           <div class="col-12 col-md-9 mb-2 mb-md-0">
-            <input type="email" class="form-control form-control-lg" placeholder="Search by job title, location, company...">
+            <form action="{% url 'Seekers:Search'  %}" method="GET">
+              <button type="submit" class="btn btn-block btn-lg btn-primary">Search</button>
+              <input type="Search" name='search' class="form-control form-control-lg" placeholder="Search by job title, location, company...">
+            </form>
           </div>
           <div class="col-12 col-md-3">
-            <button type="submit" class="btn btn-block btn-lg btn-primary">Search</button>
+          
           </div>
         </div>
       </form>
@@ -30,7 +33,7 @@
 <!-- If statement here to check if a related job was found. Do not display div if nothing was found.-->
 <div class="container">
 
-  {% for job in relatedJobs %}
+  {% for job in listings %}
     <!-- Project One -->
     <div class="row rowForJobListings" style="border:groove black">
       <div class="col-md-5">
@@ -46,6 +49,6 @@
     </div>
     <!-- /.row -->
     <hr>
-    {% endfor %}
+  {% endfor %}
     
 {% endblock %}

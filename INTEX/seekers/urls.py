@@ -7,6 +7,7 @@ urlpatterns = [
     path("profile/<str:userID>", v.profileView, name="Profile"),
     path("application", v.applicationView, name="Application"),
     path("search", v.searchJob, name="Search"),
+    path('results', v.SearchResultsView, name='SearchResults'),
     path("create_account/<str:AccountType>", v.CreateAccountView, name="CreateAccount"),
     path("login", v.loginView, name="Login"),
     path("logout", v.logoutView,name="Logout"),

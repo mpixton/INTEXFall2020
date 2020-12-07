@@ -45,6 +45,9 @@
         <a class="btn btn-primary" href="{% url 'Seekers:JobListings' %}">Jobs</a>
         {% elif user.is_Recruiter %}
         <a class="btn btn-primary" href="#">Post a Job</a>
+        {% elif user.is_superuser %}
+       <a class="btn btn-primary" href="{% url 'Seekers:JobListings' %}">Jobs</a>
+       <a class="btn btn-primary" href="{% url 'Recruiters:PostJob' %}">Post a Job</a>
         {% endif %}
         <a class="btn btn-primary" href="{% url 'Seekers:About' %}">About Us</a>
         {% comment %} <a class="btn btn-primary" href="{% url 'Seekers:CreateAccount' %}">Create Account</a> {% endcomment %}
@@ -71,7 +74,7 @@
           <form>
             <div class="form-row">
               <div class="col-12 col-md-9 mb-2 mb-md-0">
-                <input type="email" class="form-control form-control-lg" placeholder="Search by job title, location, company...">
+                <input type="Search" class="form-control form-control-lg" placeholder="Search by job title, location, company...">
               </div>
               <div class="col-12 col-md-3">
                 <button type="submit" class="btn btn-block btn-lg btn-primary">Search</button>

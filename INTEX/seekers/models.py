@@ -63,8 +63,8 @@ class ContractLength(models.Model) :
     contract_length = models.IntegerField(null=True, blank=True)
 
     def __str__(self) :
-        return self.contract_length
-        
+        return str(self.contract_length)
+
 
 class Listing(models.Model) :
     """
@@ -75,10 +75,10 @@ class Listing(models.Model) :
     job_description = models.TextField()
     location = models.CharField(max_length=50)
     contract_type = models.ForeignKey(to=ContractType, on_delete=models.DO_NOTHING)
-    contract_length = models.ForeignKey(to=ContractLength, on_delete=models.DO_NOTHING)
+    contract_length = models.ForeignKey(to=ContractLength, on_delete=models.DO_NOTHING, null=True)
 
     def __str__(self):
-        return str(self.organization) + ' ' + str(self.listingJobTitle)
+        return str(self.organization) + ' ' + str(self.listing_job_title)
 
     # def get_absolute_url(self):
     #     return reverse("model_detail", kwargs={"pk": self.pk})

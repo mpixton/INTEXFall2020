@@ -8,10 +8,10 @@ from django.contrib.auth.decorators import login_required
 # from django.contrib.auth.models import User
 from django.forms import ValidationError
 from django.urls import reverse
-from seekers.forms import SeekerSignUpFrom, RecruiterSignUpForm, OrganizationSignUpForm, addSkills
+from seekers.forms import SeekerSignUpFrom, RecruiterSignUpForm, OrganizationSignUpForm, addSkills, LoginForm
 from seekers.models import Listing, Seeker, SeekerSkills
 from django.contrib import messages
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+# from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from recruiters.models import Recruiter, Organization
 
 def about(request) :
@@ -35,31 +35,10 @@ def searchJob(request) :
     """
     Allows a user to view all jobs matching a query string.
     """
-    jobTitle = request.GET['listingJobTitle']
-    data = Listing.objects.filter(job_title = jobTitle)
-    if data.count() > 0:
-        context = {
-            "related_jobs" : data
-        }
-        return render(request, 'seekers/displayJobs.html', context)
-    else:
-        organization = request.GET['organization']
-        data = Listing.objects.filter(org = organization)
-        if data.count() > 0 :
-            context = {
-            "related_jobs" : data
-            }
-            return render(request, 'seekers/displayJobs.html', context)
-        else :
-            location = request.GET['city'] 
-            data = Listing.objects.filter(job_loc = location)
-            if data.count() > 0 :
-                context = {
-                "related_jobs" : data
-                }
-                return render(request, 'seekers/displayJobs.html', context)
-            else :
-                return HttpResponse("Not found")
+    search = request.POST.get('search')
+
+    return redirect(reverse('Seekers:SearchResults', kwargs={'SearchString': search}))
+    
 
 def jobListingsView(request) :
     """
@@ -70,7 +49,39 @@ def jobListingsView(request) :
     context = {
         "listings" : data
     }
+
     return render (request, 'seekers/jobListings.html', context)
+
+def SearchResultsView(request, SearchString) :
+    """
+    Displays the results of the search. \n
+    SearchString -> a string to match against job_title, location, org_name
+    """
+    jobTitle = request.GET['listingJobTitle']
+    data = Listing.objects.filter(job_title = jobTitle)
+    if data.count() > 0:
+        context = {
+            "listings" : data
+        }
+        return render(request, 'seekers/jobListings.html', context)
+    else:
+        organization = request.GET['organization']
+        data = Listing.objects.filter(org = organization)
+        if data.count() > 0 :
+            context = {
+            "listings" : data
+            }
+            return render(request, 'seekers/jobListings.html', context)
+        else :
+            location = request.GET['city'] 
+            data = Listing.objects.filter(job_loc = location)
+            if data.count() > 0 :
+                context = {
+                "listings" : data
+                }
+                return render(request, 'seekers/jobListings.html', context)
+            else :
+                return HttpResponse("Not found")
 
 @login_required
 def profileView(request, userID) :
@@ -85,8 +96,16 @@ def profileView(request, userID) :
 
 @login_required
 def applicationView(request) :
+
+    form = applyForm(first_name=request.user.first_name, last_name=request.user.last_name, email=request.user.email, phone=request.user.phone)
+
+    context={
+        "skills" = Skills.object.filter(user=request.user)
+    } 
+
+
     
-    return HttpResponse('Apply Here')
+    return render(request, 'seekers/addSkills.html', context)
 
 def CreateAccountView(request, AccountType) :
     """
@@ -105,7 +124,7 @@ def CreateAccountView(request, AccountType) :
         elif AccountType == 'O' :
             form = OrganizationSignUpForm(request.POST)
         else :
-            return Http404
+            return HttpResponse('didn\'t pass the account type check)
         
         # validates the form else 404
         if form.is_valid():
@@ -125,9 +144,9 @@ def CreateAccountView(request, AccountType) :
             elif AccountType == 'R':
                 first_name = form.cleaned_data.get('first_name')
                 last_name = form.cleaned_data.get('last_name')
-                phone = form.cleaned_data.get('phone')
-                job_title = form.cleaned_data.get('emp_job_title')
-                authUser =  Recruiter.objects.create(username=username, password=raw_password, first_name=first_name, last_name = last_name, email=email, phone=phone, emp_job_title=job_title)
+                job_title = form.cleaned_data.get('employee_job_title')
+                org = form.cleaned_data.get('org_name')
+                authUser =  Recruiter.objects.create(username=username, password=raw_password, first_name=first_name, last_name = last_name, email=email, emp_job_title=job_title, org=org)
 
             elif AccountType == 'O' :
                 org_name = form.cleaned_data.get('org_name')
@@ -137,7 +156,7 @@ def CreateAccountView(request, AccountType) :
             
             # should be unreachable
             else :
-                return Http404()
+                return HttpResponse('didn\'t pass the account type creation check')
 
             authUser = authenticate(username=username, password=raw_password)
             
@@ -148,7 +167,7 @@ def CreateAccountView(request, AccountType) :
                 login(request=request, user=authUser)
                 return redirect(reverse('Seekers:Index'))
             else:
-                return Http404()
+                return HttpResponse('not a valid user')
 
     # if get, return a blank form depending on the type of user they want to create
     # if not a valid type, 404
@@ -160,7 +179,7 @@ def CreateAccountView(request, AccountType) :
         elif AccountType == 'O' :
             form = OrganizationSignUpForm()
         else :
-            return Http404()
+            return HttpResponse('not a valid account type')
 
         return render(request, 'seekers/createAccount.html', {'form': form, 'AccType': AccountType})
     else :
@@ -173,26 +192,47 @@ def loginView(request) :
     """
     # checks if trying to log in (via POST) else sends a login form to attempt a login
     if request.method == 'POST':
-        form = AuthenticationForm(request=request, data=request.POST)
+        # fills out the login form with data from the form definition
+        form = LoginForm(request.POST)
+
+        # checks if the form is valid
         if form.is_valid():
+            # authenticates the user
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
+
+            # checks if the user exists in the system
             if user is not None:
+                # logs in the user and redirects to the home page
                 login(request, user)
                 messages.info(request, f"You are now logged in as {username}")
                 return redirect(reverse('Seekers:Index'))
-            else :
-                messages.error(request, "Invalid username or password.")
-        else :
-            messages.error(request, "Invalid username or password.")
-    form = AuthenticationForm()
-    return render(request = request,
-                    template_name = "seekers/login.html",
-                    context={"form":form})
 
+            else :
+                # returns an error message if no user found
+                messages.error(request, "Invalid username or password.")
+                return render(request = request, template_name = "seekers/login.html", context={"form":form})
+
+        else :
+            # returns error message if the form is not valid
+            messages.error(request, "Invalid username or password.")
+            return render(request = request, template_name = "seekers/login.html", context={"form":form})
+
+    # if get, sends a form to attempt a log in
+    elif request.method == 'GET' :
+        
+        form = LoginForm()
+        return render(request = request, template_name = "seekers/login.html", context={"form":form})
+    
+    # if any other method, 404
+    else:
+        return Http404
 
 def logoutView(request) :
+    """
+    Logs a user out
+    """
     logout(request)
     messages.info(request, "Logged out successfully!")
     return redirect("Seekers:Index")
@@ -213,4 +253,4 @@ def addSkillsView(request) :
                 template_name = "seekers/addSkills.html",
                 context={"form":form})
     else :
-        return Http404()            
+        return Http404()                    return Http404()                    return Http404()                    return Http404()                    return Http404()                    return Http404()            

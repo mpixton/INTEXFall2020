@@ -11,11 +11,11 @@ class Organization(User) :
     Model for an organization. Employs Recruiters. 
     """
     org_name = models.CharField(max_length=100, verbose_name='Organization Name')
-    size = models.CharField(max_length=2, choices=SIZE)
-    sector = models.CharField(max_length=2, choices=SECTOR)
+    size = models.IntegerField(choices=SIZE)
+    sector = models.IntegerField(choices=SECTOR)
     
     def __str__(self):
-        return str(self.person) + ' org'
+        return str(self.org_name) + ' org'
 
 
 # The User object is used by Django for auth. Has the first name, last name, username, email, and password fields. 

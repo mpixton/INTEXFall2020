@@ -4,6 +4,7 @@ from django.forms import ValidationError
 from seekers.choices import ACCOUNT_TYPE, SKILL_LEVEL
 from recruiters.choices import SECTOR, SIZE
 from seekers.models import Seeker
+from recruiters.models import Organization
 
 
 #disable no-member syntax error
@@ -25,6 +26,7 @@ class PersonSignUpForm(BaseSignUpForm) :
 
 class RecruiterSignUpForm(PersonSignUpForm) :
     employee_job_title = forms.CharField()
+    org_name = forms.ModelChoiceField(queryset=Organization.objects.all())
 
     field_order = ['first_name', 'last_name', 'employee_job_title', 'email','username', 'password', 'repeat_password', 'phone']
 
@@ -47,7 +49,7 @@ class OrganizationSignUpForm(BaseSignUpForm) :
 
     field_order = ['org_name', 'email', 'size', 'sector', 'username', 'password', 'repeat_password']
 
-class loginForm(forms.Form) :
+class LoginForm(forms.Form) :
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
 
@@ -63,8 +65,16 @@ class addSkills(forms.Form) :
     level = forms.ChoiceField(choices=SKILL_LEVEL)
 
 class apply(forms.Form) :
-    first_name = forms.CharField(initial=Seeker.objects.first_name)
-    last_name = forms.CharField(initial=Seeker.objects.last_name)
-    email = forms.EmailField(initial=Seeker.objects.email)
-    phone = forms.EmailField(initial=Seeker.objects.phone)
+    first_name = forms.CharField()
+    last_name = forms.CharField()
+    email = forms.EmailField()
+    phone = forms.EmailField()
+
+# class postJob(forms.Form) :
+#     organization = forms.CharField()
+#     listing_job_title = forms.CharField()
+#     job_description = forms.CharField()
+#     location = forms.CharField()
+#     contract_type = forms.ChoiceField(choices=CONTRACT)
+
     

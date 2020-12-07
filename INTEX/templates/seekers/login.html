@@ -28,8 +28,10 @@
         {{ form.password.label_tag }}
         {{ form.password }}
         
-        {% if form.errors %}
-        <p>Your username and password didn't match. Please try again.</p>
+        {% if messages %}
+            {% for message in messages %}
+                <p>{{message}}</p>
+            {% endfor %}
         {% endif %}
 
             <div class="clearfix">

@@ -12,8 +12,8 @@ class CreateOrgForm(forms.Form) :
         widget=forms.Select(choices=SECTOR)
     )
 
-# class CreateListing(forms.Form) :
-    # job_title = 
-    # organization = models.OneToOneField(to=Organization, on_delete=models.CASCADE)
-    # listingJobTitle = models.CharField(max_length=50)
-    # jobDescription = models.TextField()
+class PostJob(forms.Form) :
+    job_title = 
+    organization = forms.CharField(label='Organization Name')
+    listingJobTitle = forms.
+    jobDescription = models.TextField()

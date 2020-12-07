@@ -2,11 +2,15 @@
 {% load static %}
 
 {% block nameOfTab %}
-<title>Profile</title>
+<title>Apply</title>
 {% endblock %}
 
 {% block header %}
 <div class="container">
-    <h1>Profile For {{ seeker.first_name }} {{ seeker.last_name }} </h1>
+    <h1>Review Information Before Applying</h1>
 </div>
 {% endblock %}
+
+{%for skill in skills :
+    
+%}

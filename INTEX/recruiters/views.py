@@ -9,15 +9,14 @@ def indexView(request) :
     return HttpResponse('Welcome!')
 
 
-
-# def applicantListingsView(request) :
-
-#     return HttpResponse('Applicants Listings')
-
-def addListingsView(request) :
-
-    return HttpResponse('Add Listings')
-
 def profileView(request) :
 
     return HttpResponse('Profile')
+
+
+def postJobView(request) :
+    
+    return render(request, 'recruiters/postJob.html')
+
+def createJobPostingView(request) :
+    pass
