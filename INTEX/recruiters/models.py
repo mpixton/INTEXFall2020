@@ -1,24 +1,9 @@
 from django.db import models
 from recruiters.choices import SECTOR, SIZE
+from django.contrib.auth.models import User
 
 # Create your models here.
 # pylint:disable=no-member
-
-
-class Person(models.Model) :
-    """
-    Model for a person. Job Seekers and Recruiters inherit from this class.
-    """
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
-    email = models.EmailField()
-    username = models.CharField(max_length=30, unique=True)
-
-    class Meta:
-        abstract = True
-
-    def __str__(self):
-        return self.first_name + ' ' + self.last_name
 
 
 class Organization(models.Model) :
@@ -33,7 +18,8 @@ class Organization(models.Model) :
         return str(self.person) + ' org'
 
 
-class Recruiter(Person) :
+# The User object is used by Django for auth. Has the first name, last name, username, email, and password fields. 
+class Recruiter(User) :
     """
     Model for a Recruiter. Affliated with an organization.
     """
@@ -41,4 +27,4 @@ class Recruiter(Person) :
     emp_job_title = models.CharField(max_length=50, verbose_name='Employee Job Title')
     
     def __str__(self):
-        return str(self.person) + ' recruiter'
+        return str(self.get_full_name()) + ' recruiter'

@@ -1,6 +1,7 @@
 from django.urls import path
 import recruiters.views as v
 
+app_name = 'Recruiters'
 urlpatterns = [
     path("applicant_listings", v.applicantListingsView, name="Applicant Listings"),
     path("profile/<str:userID>", v.profileView, name="Profile"),
