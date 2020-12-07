@@ -78,16 +78,19 @@ WSGI_APPLICATION = 'INTEX.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+                'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': 'intexDB',
+                'USER': 'intexmaster',
+                'PASSWORD': 'm4sterp4ssword',
+                'HOST': 'localhost'
+                }
+            }
 
 # Security
 
-LOGIN_URL = '/accounts/login/'
-LOGOUT_REDIRECT_URL = reverse('Seekers:Index')
+LOGIN_URL = 'login/'
+LOGOUT_REDIRECT_URL = ''
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

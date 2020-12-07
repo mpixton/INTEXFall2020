@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block nameOfTab %}
+<title>Create Account</title>
+{% endblock %}
+
+
+{% block header %}
+<div class="container">
+    <h1>Create Account</h1>
+</div>
+{% endblock %}
+
+
+{% block firstSection %}
+
+    <form action= "{% url 'Seekers:CreateAccount' AccountType=AccType%}" method='POST' style="border:1px solid #ccc">
+        <div class="container">
+        <h4>Please fill in this form to create an account.</h4>
+        <hr>
+
+        {% csrf_token %}
+
+        {% for field in form %}
+            {{ field.label_tag}}
+            {{ field }}
+            {{ field.errors }}
+            <br>
+        {% endfor %}
+    
+    
+        <div class="clearfix">
+            <button type="submit" class="btn btn-primary">Sign Up</button>
+            <a href="{% url 'Seekers:Login' %}"><button type="button" class="btn btn-primary">Cancel</button></a>
+        </div>
+        </div>
+    </form>
+
+{% endblock %}

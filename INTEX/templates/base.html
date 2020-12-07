@@ -28,7 +28,7 @@
   <!-- Custom styles for this template -->
   <link href="{% static 'css/landing-page.min.css' %}" rel="stylesheet">
   <link href="{% static 'css/landing-page.css' %}" rel="stylesheet">
-  <link href="{% static 'css/custom.css' %}" rel="stylesheet">
+  <link href="{% static 'css/intex.css' %}" rel="stylesheet">
 
 </head>
 
@@ -38,14 +38,21 @@
   <nav class="navbar navbar-light bg-light static-top">
     <div class="container"  style="display: flex;">
       <div style="flex-grow: 1;">
-        <a class="navbar-brand" href="{% url 'Index' %}">Black Cyber Recruiting</a>
+        <a class="navbar-brand" href="{% url 'Seekers:Index' %}">Black Cyber Recruiting</a>
       </div>
       <div>
-        <a class="btn btn-primary" href="{% url 'Job Listings' %}">Jobs</a>
+        {% if user.is_Seeker or user.is_anonymous %}
+        <a class="btn btn-primary" href="{% url 'Seekers:JobListings' %}">Jobs</a>
+        {% elif user.is_Recruiter %}
         <a class="btn btn-primary" href="#">Post a Job</a>
-        <a class="btn btn-primary" href="#">About Us</a>
-        <a class="btn btn-primary" href="#">Join</a>
-        <a class="btn btn-primary" href="{% url 'Login' %}">Login</a>
+        {% endif %}
+        <a class="btn btn-primary" href="{% url 'Seekers:About' %}">About Us</a>
+        {% comment %} <a class="btn btn-primary" href="{% url 'Seekers:CreateAccount' %}">Create Account</a> {% endcomment %}
+        {% if user.is_authenticated %}
+        <a class="btn btn-primary" href="{% url 'Seekers:Logout' %}">Logout</a>
+        {% else %}
+        <a class="btn btn-primary" href="{% url 'Seekers:Login' %}">Login</a>
+        {% endif %}
       </div>
     </div>
   </nav>
@@ -86,20 +93,20 @@
         <div class="col-lg-4">
           <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
 
-            <h3>Fully Responsive</h3>
-            <p class="lead mb-0">This theme will look great on any device, no matter the size!</p>
+            <h3>Looking for a Job?</h3>
+            <p class="lead mb-0">Our website is guarnteed to match you with your best employer. We know job searching is hard, that's why we are here to help.</p>
           </div>
         </div>
         <div class="col-lg-4">
           <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
-            <h3>Bootstrap 4 Ready</h3>
-            <p class="lead mb-0">Featuring the latest build of the new Bootstrap 4 framework!</p>
+            <h3>Need to Post a Job?</h3>
+            <p class="lead mb-0">Recruiters look no further. Black Cyber Recruiter is the best website on the internet for hiring minorities.</p>
           </div>
         </div>
         <div class="col-lg-4">
           <div class="features-icons-item mx-auto mb-0 mb-lg-3">
-            <h3>Easy to Use</h3>
-            <p class="lead mb-0">Ready to use with your own content, or customize the source files!</p>
+            <h3>Are you a Company?</h3>
+            <p class="lead mb-0">Black Cyber Recruiter encourages all companies to enroll. Do so today!</p>
           </div>
         </div>
       </div>
@@ -145,7 +152,7 @@
         <div class="col-lg-6 h-100 text-center text-lg-left my-auto">
           <ul class="list-inline mb-2">
             <li class="list-inline-item">
-              <a href="#">About</a>
+              <a href="#">About Us</a>
             </li>
             <li class="list-inline-item">&sdot;</li>
             <li class="list-inline-item">
@@ -160,7 +167,7 @@
               <a href="#">Privacy Policy</a>
             </li>
           </ul>
-          <p class="text-muted small mb-4 mb-lg-0">&copy; Your Website 2020. All Rights Reserved.</p>
+          <p class="text-muted small mb-4 mb-lg-0">&copy; Black Cyber Recruiter. All Rights Reserved.</p>
         </div>
       </div>
     </div>

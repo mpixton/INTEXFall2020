@@ -5,6 +5,12 @@ SKILL_LEVEL = [
     (4, 'Expert'),
 ]
 
+ACCOUNT_TYPE = [
+    ('S', 'Job Seeker'), 
+    ('R', 'Recruiter'), 
+    ('O', 'Organization'),
+]
+
 CONTRACT = [
     (1, 'Apprenticeship'),
     (2, 'Apprenticeship 12 mois'),

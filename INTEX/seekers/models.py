@@ -15,6 +15,7 @@ class Seeker(User) :
     Model for a Job Seeker. Inherits from base Django User object.
     """
     has_resume = models.BooleanField()
+    phone = models.CharField(max_length=14)
 
     def __str__(self):
         return str(self.get_full_name()) + ' seeker'
@@ -45,27 +46,42 @@ class SeekerSkills(models.Model) :
         unique_together = ('seeker', 'skill')
 
 
+class ContractType(models.Model) :
+    """
+    Model for a Contract Type, according to French standards.
+    """
+    contract_type = models.CharField(max_length=30)
+
+    def __str__(self):
+        return self.contract_type
+    
+
+class ContractLength(models.Model) :
+    """
+    Model for Contract Lengths. 
+    """
+    contract_length = models.IntegerField(null=True, blank=True)
+
+    def __str__(self) :
+        return self.contract_length
+        
+
 class Listing(models.Model) :
     """
     Model for a Listing. Created by a Recruiter, affliated with an Organization. Allows Seekers to apply for employment at an Organization.
     """
     organization = models.OneToOneField(to=Organization, on_delete=models.CASCADE)
-    listingJobTitle = models.CharField(max_length=50)
-    jobDescription = models.TextField()
+    listing_job_title = models.CharField(max_length=50)
+    job_description = models.TextField()
+    location = models.CharField(max_length=50)
+    contract_type = models.ForeignKey(to=ContractType, on_delete=models.DO_NOTHING)
+    contract_length = models.ForeignKey(to=ContractLength, on_delete=models.DO_NOTHING)
 
     def __str__(self):
         return str(self.organization) + ' ' + str(self.listingJobTitle)
 
     # def get_absolute_url(self):
     #     return reverse("model_detail", kwargs={"pk": self.pk})
-
-
-class ContractType(models.Model) :
-    """
-    Model for a Contract Type, according to French standards.
-    """
-    contract_type = models.CharField(max_length=30)
-    contract_length = models.IntegerField(null=True, blank=True)
 
 
 class Application(models.Model) :

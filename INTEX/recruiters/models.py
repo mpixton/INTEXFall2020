@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 # pylint:disable=no-member
 
 
-class Organization(models.Model) :
+class Organization(User) :
     """
     Model for an organization. Employs Recruiters. 
     """

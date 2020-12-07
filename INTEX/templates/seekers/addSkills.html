@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block nameOfTab %}
+<title>Add A Skill</title>
+{% endblock %}
+
+{% block header %}
+<div class="container">
+    <h1>Add Your Skills and Their Associated Levels</h1>
+</div>
+{% endblock %}
+
+{% block firstSection %}
+
+    <form action= "{% url 'Seekers:addSkills' AccountType=AccType%}" method='POST' style="border:1px solid #ccc">
+        <div class="container">
+        <h4>Please select your skill and skill level.</h4>
+        <hr>
+        
+        {% csrf_token %}
+
+        {{ form.skill.label_tag }}
+        {{ form.skill }}
+        <br>
+        {{ form.level.label_tag }}
+        {{ form.level }}
+    
+            <div class="clearfix">
+                <button type="submit" class="btn btn-primary">Add Skill</button>
+                <button type="button" class="btn btn-primary">Cancel</button>
+                <br>
+            </div>
+        </div>
+    </form>
+    
+{% endblock %}

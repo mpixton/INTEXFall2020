@@ -6,14 +6,61 @@
 {% endblock %}
 
 {% block header %}
-<p>This is the login page</p>
+<div class="container">
+    <h1>Welcome to Black Cyber Recruiter</h1>
+</div>
 {% endblock %}
+
+
 
 {% block firstSection %}
-{{ form }}
-<p>First Section</p>
-{% endblock %}
 
-{% block secondSection %}
-<p>Second Section</p>
+    <form action= "{% url 'Seekers:Login' %}" method='POST' style="border:1px solid #ccc">
+        <div class="container">
+        <h4>Please login to continue.</h4>
+        <hr>
+
+        {% csrf_token %}
+
+        {{ form.username.label_tag }}
+        {{ form.username }}
+        <br>
+        {{ form.password.label_tag }}
+        {{ form.password }}
+        
+        {% if form.errors %}
+        <p>Your username and password didn't match. Please try again.</p>
+        {% endif %}
+
+            <div class="clearfix">
+                <button type="submit" class="btn btn-primary">Login</button>
+                <button type="button" class="btn btn-primary">Cancel</button>
+                <br>
+            </div>
+        </div>
+    </form>
+    
+    <br>
+
+    <div class="container">
+    <h3>Don't have an account?</h3>
+    <p>Create one here!</p>
+        <div class="container-row">
+            <form action="{% url 'Seekers:CreateAccount' AccountType='S' %}" method="GET">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">I am a Job Seeker</button>
+            </form>
+            <br>
+            <form action="{% url 'Seekers:CreateAccount' AccountType='R' %}" method="GET">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">I am a Recruiter</button>
+            </form>
+            <br>
+            <form action="{% url 'Seekers:CreateAccount' AccountType='O' %}" method="GET">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">I am an Organization</button>
+            </form>
+        </div>
+    </div>
+
 {% endblock %}
