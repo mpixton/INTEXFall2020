@@ -5,14 +5,20 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-# from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.forms import ValidationError
 from django.urls import reverse
-from seekers.forms import SeekerSignUpFrom, RecruiterSignUpForm, OrganizationSignUpForm, addSkills, LoginForm
-from seekers.models import Listing, Seeker, SeekerSkills
+from seekers.forms import SeekerSignUpFrom, RecruiterSignUpForm, OrganizationSignUpForm, AddSkillsForm, LoginForm, applyForm
+from seekers.models import Listing, Seeker, SeekerSkill, Skill
 from django.contrib import messages
 # from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from recruiters.models import Recruiter, Organization
+
+ACCOUNT_TYPES = {
+    'R': 'recruiter',
+    'S': 'seeker',
+    'O': 'organization',
+}
 
 def about(request) :
     """
@@ -26,7 +32,7 @@ def about(request) :
 def IndexPageView(request) :
     """
     Home page of the website. \n
-     no parameters.
+    no parameters.
     """
     
     return render (request, 'seekers/index.html')
@@ -84,27 +90,58 @@ def SearchResultsView(request, SearchString) :
                 return HttpResponse("Not found")
 
 @login_required
-def profileView(request, userID) :
+def profileView(request, Type, userID) :
     """
     Allows the user to view their own profile information. \n
     userID -> str, the pk of the User
     """
-    user = request.user
-    data = Seeker.objects.filter(user)
+    if Type == 'seeker' :
+        data = Seeker.objects.get(user=request.user)
+        skills = SeekerSkill.objects.filter(seeker__user=request.user).values_list('skill__skill_name', 'level', named=True)
+        if data is not None :
+            context = {
+                "seeker" : data,    
+                "skills" : skills,
+            }
+            return render(request, 'seekers/profile.html', context=context)
 
-    return HttpResponse('Profile')
+    elif Type == 'recruiter' :
+        data = Recruiter.objects.get(pk=userID)
+
+        if data is not None :
+            context = {
+                "seeker" : data,
+            }
+            return render(request, 'seekers/profile.html', context=context)
+
+    elif Type == 'organization' :
+        data = Organization.objects.get(pk=userID)
+
+        if data is not None :
+            context = {
+                "seeker" : data,
+            }
+            return render(request, 'seekers/profile.html', context=context)
+    else :
+        return HttpResponse("Not found")
+        
 
 @login_required
 def applicationView(request) :
+    
+    form = applyForm(initial={'first_name':request.user.first_name, 'last_name':request.user.last_name, 'email':request.user.email})
 
-    form = applyForm(first_name=request.user.first_name, last_name=request.user.last_name, email=request.user.email, phone=request.user.phone)
+    print(request.user)
+    print(Seeker.objects.get(user=request.user.pk))
+    print(Skill.objects.all())
+
+    currentSeeker = Seeker.objects.get(pk=request.user)
 
     context={
-        "skills" = Skills.object.filter(user=request.user)
+        "skills": Skill.objects.filter(seekerskill__seeker=currentSeeker.pk),
+        "form": form
     } 
 
-
-    
     return render(request, 'seekers/addSkills.html', context)
 
 def CreateAccountView(request, AccountType) :
@@ -124,12 +161,12 @@ def CreateAccountView(request, AccountType) :
         elif AccountType == 'O' :
             form = OrganizationSignUpForm(request.POST)
         else :
-            return HttpResponse('didn\'t pass the account type check)
+            return HttpResponse('didn\'t pass the account type check')
         
         # validates the form else 404
         if form.is_valid():
             username = form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password')
+            password = form.cleaned_data.get('password')
             email = form.cleaned_data.get('email')
 
             # creates an account depending on the account type
@@ -139,33 +176,48 @@ def CreateAccountView(request, AccountType) :
                 phone = form.cleaned_data.get('phone')
                 # resume = form.cleaned_data.get('resume')
                 # skill = form.cleaned_data.get('skill')
-                authUser = Seeker.objects.create(username=username, password=raw_password, first_name=first_name, last_name = last_name, email=email, phone=phone, has_resume=False, )
+                newUser = User.objects.create_user(username=username, password=password, email=email)
+                newUser.first_name = first_name
+                newUser.last_name = last_name
+                newUser.save()
+                person = Seeker.objects.create(user=newUser, phone=phone, has_resume=False)
+                my_group = Group.objects.get(name='Seekers')
+                my_group.user_set.add(newUser)
 
             elif AccountType == 'R':
                 first_name = form.cleaned_data.get('first_name')
                 last_name = form.cleaned_data.get('last_name')
                 job_title = form.cleaned_data.get('employee_job_title')
                 org = form.cleaned_data.get('org_name')
-                authUser =  Recruiter.objects.create(username=username, password=raw_password, first_name=first_name, last_name = last_name, email=email, emp_job_title=job_title, org=org)
+                newUser =  User.objects.create_user(username=username, password=password, email=email)
+                newUser.first_name = first_name
+                newUser.last_name = last_name
+                newUser.save()
+                person = Recruiter.objects.create(user=newUser, emp_job_title=job_title, org=org)
+                my_group = Group.objects.get(name='Recruiters')
+                my_group.user_set.add(newUser)
 
             elif AccountType == 'O' :
                 org_name = form.cleaned_data.get('org_name')
                 size = form.cleaned_data.get('size')
                 sector = form.cleaned_data.get('sector')
-                authUser = Organization.objects.create(username=username, password=raw_password, email=email, org_name=org_name, size=size, sector=sector)
+                newUser = User.objects.create_user(username=username, password=password, email=email)
+                person = Organization.objects.create(user=newUser,  org_name=org_name, size=size, sector=sector)
+                my_group = Group.objects.get(name='Organizations')
+                my_group.user_set.add(newUser)
             
             # should be unreachable
             else :
                 return HttpResponse('didn\'t pass the account type creation check')
 
-            authUser = authenticate(username=username, password=raw_password)
+            authUser = authenticate(username=username, password=password)
             
             # require the returned user to have actually been created
             # log in the user, else 404
             # 404 should be unreachable
             if authUser is not None :
                 login(request=request, user=authUser)
-                return redirect(reverse('Seekers:Index'))
+                return redirect(reverse('Seekers:Profile', kwargs={'userID': person.pk, 'Type': ACCOUNT_TYPES.get(AccountType)}))
             else:
                 return HttpResponse('not a valid user')
 
@@ -183,7 +235,7 @@ def CreateAccountView(request, AccountType) :
 
         return render(request, 'seekers/createAccount.html', {'form': form, 'AccType': AccountType})
     else :
-        return Http404()
+        return HttpResponse('Not a valid method')
 
 def loginView(request) :
     """
@@ -239,18 +291,21 @@ def logoutView(request) :
 
 def addSkillsView(request) :
     if request.method == 'POST' :
-        form = addSkills(request.POST)
+        form = AddSkillsForm(request.POST)
         if form.is_valid() :
             skill = form.cleaned_data.get('skill')
             level = form.cleaned_data.get('level')
-            SeekerSkills.objects.create(user=request.user, skill=skill, level=level)
-            return redirect(reverse('Seekers:Profile'))
+            seeker = Seeker.objects.get(user=request.user)
+            SeekerSkill.objects.create(seeker=seeker, skill=skill, level=level)
+            return redirect(reverse('Seekers:Profile', kwargs={'Type': 'seeker', 'userID': seeker.pk}))
         else :
             return Http404()
-    elif(request.method == 'GET') :
-        form = addSkills()
+    elif request.method == 'GET' :
+
+        form = AddSkillsForm()
+        
         return render(request = request,
                 template_name = "seekers/addSkills.html",
                 context={"form":form})
     else :
-        return Http404()                    return Http404()                    return Http404()                    return Http404()                    return Http404()                    return Http404()            
+        return Http404()

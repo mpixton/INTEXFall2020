@@ -11,6 +11,35 @@
 </div>
 {% endblock %}
 
-{%for skill in skills :
-    
-%}
+{% block firstSection %}
+
+<form action= "{% url 'Seekers:Application' %}" method='POST' style="border:1px solid #ccc">
+    <div class="container">
+    <h4>Please verify the information is correct.</h4>
+    <hr>
+
+    {% csrf_token %}
+    {{ form.first_name.label_tag }}
+    {{ form.first_name }}
+
+    {{ form.last_name.label_tag }}
+    {{ form.last_name }}
+
+    {{ form.email.label_tag }}
+    {{ form.email }}
+
+
+    {% for skill in skills :%}
+    {{ field.label_tag}}
+    {{ field }}
+    {{ field.errors }}
+    {% endfor %}
+
+    <div class="clearfix">
+        <button type="submit" class="btn btn-primary">Apply</button>
+        <a href="{% url 'Seekers:Index' %}"><button type="button" class="btn btn-primary">Cancel</button></a>
+    </div>
+    </div>
+</form>
+
+{% endblock %}

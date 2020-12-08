@@ -60,15 +60,14 @@ class updateInfo(forms.Form) :
 class ListingSearch(forms.Form) :
     keyword = forms.CharField()
 
-class addSkills(forms.Form) :
+class AddSkillsForm(forms.Form) :
     skill = forms.ModelChoiceField(Skill.objects.all())
     level = forms.ChoiceField(choices=SKILL_LEVEL)
 
-class apply(forms.Form) :
+class applyForm(forms.Form) :
     first_name = forms.CharField()
     last_name = forms.CharField()
     email = forms.EmailField()
-    phone = forms.EmailField()
 
 # class postJob(forms.Form) :
 #     organization = forms.CharField()

@@ -7,6 +7,18 @@
 
 {% block header %}
 <div class="container">
-    <h1>Profile For {{ seeker.first_name }} {{ seeker.last_name }} </h1>
-</div>
-{% endblock %}
+    <h1>Profile For {{ seeker.user.first_name }} {{ seeker.user.last_name }} </h1>
+        <div class="row rowForJobListings" style="border:groove black">
+            <div class="col-md-5">
+                <h3>Username:  {{ seeker.user.username }}</h3>
+                <h3>Email: {{ seeker.user.email }}</h3>
+                <h3>Phone: {{ seeker.phone }}</h3>
+                <h3>Skills: </h3>   
+                    <ul>
+                        {% for skill in skills %}
+                                <li>{{ skill.skill__skill_name }} with rating {{ skill.level }}</li>
+                        {% endfor %}
+                    </ul>
+                <a href="{% url 'Seekers:AddSkills' %}"><button type="submit" class="btn btn-primary">Add A Skill</button></a>
+            </div>
+{% endblock header %}

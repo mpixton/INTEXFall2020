@@ -1,5 +1,9 @@
+# pylint:disable=no-member
+
 from django import forms
 from recruiters.choices import SIZE, SECTOR
+from seekers.models import ContractType, ContractLength
+from recruiters.models import Organization
 
 class CreateOrgForm(forms.Form) :
     org_name = forms.CharField(label='Organization Name')
@@ -12,8 +16,10 @@ class CreateOrgForm(forms.Form) :
         widget=forms.Select(choices=SECTOR)
     )
 
-class PostJob(forms.Form) :
-    job_title = 
-    organization = forms.CharField(label='Organization Name')
-    listingJobTitle = forms.
-    jobDescription = models.TextField()
+class PostJobForm(forms.Form) :
+    job_title = forms.CharField(label='Job Title')
+    organization = forms.ModelChoiceField(queryset=Organization.objects.all())
+    job_description = forms.CharField(label='Job Description')
+    location = forms.CharField(label='Location')
+    contract_length = forms.ModelChoiceField(queryset=ContractLength.objects.all())
+    contract_type = forms.ModelChoiceField(queryset=ContractType.objects.all())

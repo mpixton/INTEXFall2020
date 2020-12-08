@@ -4,7 +4,7 @@ import seekers.views as v
 app_name = 'Seekers'
 urlpatterns = [
     path("job_listings", v.jobListingsView, name="JobListings"),
-    path("profile/<str:userID>", v.profileView, name="Profile"),
+    path("profile/<str:Type>/<str:userID>", v.profileView, name="Profile"),
     path("application", v.applicationView, name="Application"),
     path("search", v.searchJob, name="Search"),
     path('results', v.SearchResultsView, name='SearchResults'),

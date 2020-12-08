@@ -10,15 +10,16 @@ from django.contrib.auth.models import User
 
 
 # The User object is used by Django for auth. Has the first name, last name, username, email, and password fields. 
-class Seeker(User) :
+class Seeker(models.Model) :
     """
-    Model for a Job Seeker. Inherits from base Django User object.
+    Model for a Job Seeker. Stores extra information about a User specfic to a Seeker.
     """
+    user = models.OneToOneField(to=User, on_delete=models.CASCADE)
     has_resume = models.BooleanField()
     phone = models.CharField(max_length=14)
 
     def __str__(self):
-        return str(self.get_full_name()) + ' seeker'
+        return str(self.user.get_full_name()) + ' seeker'
 
 
 class Skill(models.Model) :
@@ -31,16 +32,17 @@ class Skill(models.Model) :
         return self.skill_name
     
 
-class SeekerSkills(models.Model) :
+class SeekerSkill(models.Model) :
     """
     Model for a Job Seeker-Skill-level instance. Allows the Job Seeker to have a Skill and level for that skill. 0 is not allowed because then its not a skill. A Job Seeker-Skill pairing must be unique. 
     """
+
     seeker = models.ForeignKey(to=Seeker, on_delete=models.DO_NOTHING)
     skill = models.ForeignKey(to=Skill, on_delete=models.PROTECT)
-    level = models.IntegerField(choices=SKILL_LEVEL)
+    level = models.CharField(max_length=1, choices=SKILL_LEVEL)
 
     def __str__(self):
-        return str(self.seeker.person) + ' ' + str(self.skill) + ' ' + self.level
+        return str(self.seeker.user.get_full_name()) + ' ' + str(self.skill) + ' ' + str(self.level)
     
     class Meta: 
         unique_together = ('seeker', 'skill')
@@ -70,11 +72,11 @@ class Listing(models.Model) :
     """
     Model for a Listing. Created by a Recruiter, affliated with an Organization. Allows Seekers to apply for employment at an Organization.
     """
-    organization = models.OneToOneField(to=Organization, on_delete=models.CASCADE)
+    organization = models.ForeignKey(to=Organization, on_delete=models.CASCADE)
     listing_job_title = models.CharField(max_length=50)
     job_description = models.TextField()
     location = models.CharField(max_length=50)
-    contract_type = models.ForeignKey(to=ContractType, on_delete=models.DO_NOTHING)
+    contract_type = models.ForeignKey(to=ContractType, on_delete=models.DO_NOTHING, null=True)
     contract_length = models.ForeignKey(to=ContractLength, on_delete=models.DO_NOTHING, null=True)
 
     def __str__(self):
@@ -83,6 +85,18 @@ class Listing(models.Model) :
     # def get_absolute_url(self):
     #     return reverse("model_detail", kwargs={"pk": self.pk})
 
+
+class ListingSkill(models.Model) :
+    """
+    """
+    listing = models.ForeignKey(to=Listing, on_delete=models.CASCADE)
+    skill = models.ForeignKey(to=Skill, on_delete=models.CASCADE)
+    level = models.CharField(max_length=1, choices=SKILL_LEVEL)
+    is_required = models.BooleanField()
+
+    def __str__(self) :
+        return str(self.listing) + ' ' + str(self.skill) + ' ' + self.level
+        
 
 class Application(models.Model) :
     """

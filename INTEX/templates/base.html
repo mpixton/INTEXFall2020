@@ -41,20 +41,22 @@
         <a class="navbar-brand" href="{% url 'Seekers:Index' %}">Black Cyber Recruiting</a>
       </div>
       <div>
-        {% if user.is_Seeker or user.is_anonymous %}
         <a class="btn btn-primary" href="{% url 'Seekers:JobListings' %}">Jobs</a>
-        {% elif user.is_Recruiter %}
-        <a class="btn btn-primary" href="#">Post a Job</a>
+        {% if user.is_authenticated %}
+        <a class="btn btn-primary" href="{% url 'Recruiters:PostJob' %}">Post a Job</a>
         {% elif user.is_superuser %}
-       <a class="btn btn-primary" href="{% url 'Seekers:JobListings' %}">Jobs</a>
-       <a class="btn btn-primary" href="{% url 'Recruiters:PostJob' %}">Post a Job</a>
+        <a class="btn btn-primary" href="{% url 'Seekers:JobListings' %}">Jobs</a>
+        <a class="btn btn-primary" href="{% url 'Recruiters:PostJob' %}">Post a Job</a>
         {% endif %}
         <a class="btn btn-primary" href="{% url 'Seekers:About' %}">About Us</a>
-        {% comment %} <a class="btn btn-primary" href="{% url 'Seekers:CreateAccount' %}">Create Account</a> {% endcomment %}
+        {% if perms.seekers.add_listing %}
+        <a class="btn btn-primary" href="{% url 'Seekers:Index' %}">Test Account</a>
+        {% endif %}
         {% if user.is_authenticated %}
+        {% comment %} <a class="btn btn-primary" href="{% url 'Seekers:Profile' %}">Profile</a> {% endcomment %}
         <a class="btn btn-primary" href="{% url 'Seekers:Logout' %}">Logout</a>
         {% else %}
-        <a class="btn btn-primary" href="{% url 'Seekers:Login' %}">Login</a>
+        <a class="btn btn-primary" href="{% url 'Seekers:Login' %}">Login/Create Account</a>
         {% endif %}
       </div>
     </div>
@@ -97,7 +99,7 @@
           <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
 
             <h3>Looking for a Job?</h3>
-            <p class="lead mb-0">Our website is guarnteed to match you with your best employer. We know job searching is hard, that's why we are here to help.</p>
+            <p class="lead mb-0">Our website is guaranteed to match you with your best employer. We know job searching is hard, that's why we are here to help.</p>
           </div>
         </div>
         <div class="col-lg-4">
@@ -119,33 +121,66 @@
 {% endblock %}
 
 {% block secondSection %}
-  <!-- Testimonials -->
-  <section class="testimonials text-center bg-light" >
-    <div class="container" >
-      <h2 class="mb-5" >What people are saying...</h2>
-      <div class="row" >
-        <div class="col-lg-4">
-          <div class="testimonial-item mx-auto mb-5 mb-lg-0">
-            <h5>Margaret E.</h5>
-            <p class="font-weight-light mb-0">"This is fantastic! Thanks so much guys!"</p>
+  <!-- Helpful Links -->
+  <div class="container my-4">
+
+    <!-- Wrapper-->
+    <div id="multi-item-example" class="carousel slide carousel-multi-item" data-ride="carousel">
+
+      <!--Slides-->
+      <div class="carousel-inner" role="listbox">
+
+        <!--3 Slides-->
+        <div class="carousel-item active">
+
+          <div class="row">
+            <div class="col-md-4">
+              <div class="card mb-2">
+                <img class="card-img-top" src="https://i.pinimg.com/736x/17/3b/c5/173bc5119dd188f88d4a66752e7b1f3b.jpg"
+                  alt="Chart img">
+                <div class="card-body">
+                  <h4 class="card-title">Black Unemployment Rate</h4>
+                  <p class="card-text">Up to date Federal Reserve Economic Data graph highlighting black unemployment over time.</p>
+                  <button class="btn btn-primary" onclick="location.href='https://fred.stlouisfed.org/series/LNS14000006'">Learn More</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 clearfix d-none d-md-block">
+              <div class="card mb-2">
+                <img class="card-img-top" src="https://imgix.bustle.com/elite-daily/2017/05/08082959/thinking-man-meme.jpg?w=1200&h=630&q=70&fit=crop&crop=faces&fm=jpg"
+                  alt="Card image cap">
+                <div class="card-body">
+                  <h4 class="card-title">Black Labor Force</h4>
+                  <p class="card-text">Data from U.S. Bureau of Labor Statistics identifying market activity of blacks in the U.S.</p>
+                  <button class="btn btn-primary" onclick="location.href='https://www.bls.gov/spotlight/2020/african-american-history-month/home.htm'">Learn More</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 clearfix d-none d-md-block">
+              <div class="card mb-2">
+                <img class="card-img-top" src="https://image.shutterstock.com/mosaic_250/2842531/272513510/stock-photo-closeup-of-resume-272513510.jpg"
+                  alt="Card image cap">
+                <div class="card-body">
+                  <h4 class="card-title">14 Quick Job Tips</h4>
+                  <p class="card-text">LiveCareer.com lays out 14 helpful tips to help you step up your game and get hired fast.</p>
+                  <button class="btn btn-primary" onclick="location.href='https://www.livecareer.com/resources/jobs/search/14-job-hunting-tips'">Learn More</button>
+                </div>
+              </div>
+            </div>
           </div>
+
         </div>
-        <div class="col-lg-4">
-          <div class="testimonial-item mx-auto mb-5 mb-lg-0">
-            <h5>Fred S.</h5>
-            <p class="font-weight-light mb-0">"Bootstrap is amazing. I've been using it to create lots of super nice landing pages."</p>
-          </div>
-        </div>
-        <div class="col-lg-4">
-          <div class="testimonial-item mx-auto mb-5 mb-lg-0">
-            <h5>Sarah W.</h5>
-            <p class="font-weight-light mb-0">"Thanks so much for making these free resources available to us!"</p>
-          </div>
-        </div>
+        <!--/.3 Slides-->
+
       </div>
+      <!--/.Slides-->
+
     </div>
-    <hr>
-  </section>
+    <!--/.Wrapper-->
+
+  </div>
 {% endblock %}
 
   <!-- Footer -->

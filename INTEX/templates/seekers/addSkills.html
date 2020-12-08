@@ -13,10 +13,10 @@
 
 {% block firstSection %}
 
-    <form action= "{% url 'Seekers:addSkills' AccountType=AccType%}" method='POST' style="border:1px solid #ccc">
+    <form action= "{% url 'Seekers:AddSkills' %}" method='POST' style="border:1px solid #ccc">
         <div class="container">
         <h4>Please select your skill and skill level.</h4>
-        <hr>
+        <br>
         
         {% csrf_token %}
 
