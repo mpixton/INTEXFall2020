@@ -9,7 +9,8 @@ from django.contrib.auth.models import User, Group
 from django.forms import ValidationError
 from django.urls import reverse
 from seekers.forms import SeekerSignUpFrom, RecruiterSignUpForm, OrganizationSignUpForm, AddSkillsForm, LoginForm, applyForm
-from seekers.models import Listing, Seeker, SeekerSkill, Skill
+from seekers.models import Listing, Seeker, SeekerSkill, Skill, Application
+from recruiters.models import Recruiter
 from django.contrib import messages
 # from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from recruiters.models import Recruiter
@@ -17,6 +18,7 @@ from django.db.models import Q
 import operator
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.views.generic import ListView
+from django.db import IntegrityError
 
 
 
@@ -44,21 +46,15 @@ def IndexPageView(request) :
     return render (request, 'seekers/index.html')
 
 
-
 def SearchBar(request, SearchString) :
-    print('Im in the search bar function')
-    print(request.method)
-    print(request.GET.get('search'))
     search = request.GET.get('search')
-    print(search)
-    post = Listing.objects.all().filter(listing_job_title = search)
+    post = Listing.objects.all().filter( Q (listing_job_title__icontains = search) | Q (location__icontains = search) | Q (posted_by__org__icontains=search))
     context = {
         "listings" : post
     }
     return render(request, 'seekers/jobListings.html', context)
 
        
-
 def searchJob(request) :
     """
     Allows a user to view all jobs matching a query string.
@@ -72,7 +68,6 @@ def jobListingsView(request) :
     """
     Shows the user a list of all job listings.
     """
-    print('Im the job listings view')
     data = Listing.objects.all()
 
     context = {
@@ -120,7 +115,7 @@ def profileView(request, Type, userID) :
     """
     if Type == 'seeker' :
         data = Seeker.objects.get(user=request.user)
-        skills = SeekerSkill.objects.filter(seeker__user=request.user).values_list('skill__skill_name', 'level', named=True)
+        skills = SeekerSkill.objects.filter(seeker__user=request.user)
         
         if data is not None :
             context = {
@@ -145,26 +140,59 @@ def profileView(request, Type, userID) :
     
 
 @login_required
-def applicationView(request) :
+def applicationView(request, ListingID) :
+    """
+    Handles serving a blank application for Seeker review (GET method) or creates an application object (POST method) associated with the Seeker. \n
+    Takes no parameters.
+    """
+    # checks if method is GET or POST
+    # if GET, render blank form
+    if request.method == 'GET' :
+        # create blank form with intitial data from the user
+        form = applyForm(initial={'first_name':request.user.first_name, 'last_name':request.user.last_name, 'email':request.user.email})
+        # set current Seeker user
+        currentSeeker = Seeker.objects.get(user=request.user)
+        # set context variable
+        # //TODO zip up the skill level names
+        context={
+            "skills": SeekerSkill.objects.filter(seeker=currentSeeker),
+            "form": form,
+            "listing": Listing.objects.get(pk=ListingID),
+        } 
+
+        return render(request, 'seekers/apply.html', context)
     
-    form = applyForm(initial={'first_name':request.user.first_name, 'last_name':request.user.last_name, 'email':request.user.email})
+    # if POST, create an application object 
+    elif request.method == 'POST' :
+        form = applyForm(request.POST)
+        # check if form is valid
+        if form.is_valid() :
+            # error handling in case they've already applied
+            try :
+                # creates the application object and sets the seeker and listing
+                seeker = Seeker.objects.get(user=request.user)
+                listing = Listing.objects.get(pk=ListingID)
+                Application.objects.create(seeker=seeker, listing=listing)
 
-    print(request.user)
-    print(Seeker.objects.get(user=request.user))
-    print(Skill.objects.filter(seekerskill__seeker=Seeker.objects.get(user=request.user)))
-
-    # //TODOD FIx error
-    # currentSeeker = Seeker.objects.get(pk=request.user)
-    # TypeError: Field 'id' expected a number but got <SimpleLazyObject: <User: odawg5>>.
-    currentSeeker = Seeker.objects.get(user=request.user)
+            except IntegrityError :
+                # sets the error context
+                context = {
+                    'error': 'You have already applied to this job!',
+                    'errorjob': Application.objects.get(seeker=seeker, listing=listing),
+                    'listings': Listing.objects.all(),
+                }
+                # renders the page with the error message
+                return render (request, 'seekers/jobListings.html', context)
+            # if object is created successfully, render the job listings page
+            return redirect(reverse('Seekers:JobListings'))
+        
+        else:
+            return HttpResponse('Form not valid to create and application')
     
-    context={
-        "skills": Skill.objects.filter(seekerskill__seeker=currentSeeker),
-        "form": form,
-        "skillslevel": SeekerSkill.objects.filter(seeker=currentSeeker)
-    } 
+    # else
+    else :
+        return HttpResponse('invalid method called')
 
-    return render(request, 'seekers/apply.html', context)
 
 def CreateAccountView(request, AccountType) :
     """
@@ -328,3 +356,13 @@ def addSkillsView(request) :
                 context={"form":form})
     else :
         return Http404()
+
+
+def userApplicationsView(request) :
+    user = Seeker.objects.get(user=request.user)
+    applications = Application.objects.filter(seeker__user=request.user)
+    context = {   
+        "applications" : applications,
+        "user" : user,
+    }
+    return render(request, 'seekers/applications.html', context=context)

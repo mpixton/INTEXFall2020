@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load seekers_extras %}
 
 {% block nameOfTab %}
 <title>Profile</title>
@@ -15,16 +16,18 @@
                 {% if perms.recruiters.is_recruiter %}
                 <h3>Organization: {{ profile.org }}</h3>
                 {% elif perms.seekers.is_seeker %}
+
                 <h3>Phone: {{ profile.phone }}</h3>
                 {% endif %}
                 {% if perms.seekers.is_seeker %}
                 <h3>Skills: </h3>   
                     <ul>
                         {% for skill in skills %}
-                                <li>{{ skill.skill__skill_name }} with rating {{ skill.level }}</li>
+                                <li>{{ skill.skill.skill_name }} with rating {{ skill.level|returnRating }}</li>
                         {% endfor %}
                     </ul>
                 <a href="{% url 'Seekers:AddSkills' %}"><button type="submit" class="btn btn-primary">Add A Skill</button></a>
+                <a href="{% url 'Seekers:UserApplication' %}"><button type="submit" class="btn btn-primary">My Applications</button></a>
                 {% elif perms.recruiters.is_recruiter %}
                 <h3>Jobs at your organization: </h3>
                 <ul>

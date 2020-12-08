@@ -1,5 +1,6 @@
-{% extends 'base.html' %}
+    {% extends 'base.html' %}
 {% load static %}
+{% load seekers_extras %}
 
 {% block nameOfTab %}
 <title>Apply</title>
@@ -13,11 +14,11 @@
 
 {% block firstSection %}
 
-<form action= "{% url 'Seekers:Application' %}" method='POST' style="border:1px solid #ccc">
+<form action= "{% url 'Seekers:Application' ListingID=listing.pk %}" method='POST' style="border:1px solid #ccc">
     <div class="container">
     <h4>Please verify the information is correct.</h4>
     <hr>
-
+    <div class="form-column">
     {% csrf_token %}
     {{ form.first_name.label_tag }}
     {{ form.first_name }}
@@ -27,20 +28,16 @@
 
     {{ form.email.label_tag }}
     {{ form.email }}
-
+    </div>
+    <h5>Your Skills:</h5>
     <ul>
     {% for skill in skills %}
-      <li>  {{ skill.skill_name }} {{ skill.seekerskill__level }} </li>
-    {% endfor %}
-    </ul>
-    <ul>
-    {% for skill in skillslevel %}
-      <li>  {{ skill.level }} {{ skill.skill__name }} </li>
+      <li>{{ skill.skill.skill_name|title }} {{ skill.level|returnRating }}</li>
     {% endfor %}
     </ul>
     <div class="clearfix">
         <button type="submit" class="btn btn-primary">Apply</button>
-        <a href="{% url 'Seekers:Index' %}"><button type="button" class="btn btn-primary">Cancel</button></a>
+        <a href="{% url 'Seekers:JobListings' %}"><button type="button" class="btn btn-primary">Cancel</button></a>
     </div>
     </div>
 </form>

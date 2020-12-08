@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block nameOfTab %}
+<title>My Applications</title>
+{% endblock %}
+
+{% block header %}
+<div class="container">
+    <h1>APPLICATIONS</h1>
+</div>
+{% endblock %}
+
+
+{% block firstSection %}
+
+<div class="container">
+    <div class="row rowForJobListings" style="border:groove black">
+        <h3>Applications for {{ user.user.first_name }} {{ user.user.last_name }}</h3>
+
+        <ul>
+            {% for application in applications %}
+                <p>You applied for the {{ application.listing}} job on {{ application.date_applied}}</p>
+            {% endfor %}
+        </ul>
+    </div>
+    <button type="button" class="btn btn-primary">Cancel</button>
+</div>
+{% endblock %}

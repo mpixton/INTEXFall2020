@@ -33,6 +33,13 @@
 <!-- If statement here to check if a related job was found. Do not display div if nothing was found.-->
 <div class="container">
 
+{% if error is not None %}
+<h3>{{ error }}</h3>
+<h5>{{ errorjob.listing.posted_by.org }}</h5>
+<h5>{{ errorjob.listing.listing_job_title }}</h5>
+<h5>{{ errorjob.date_applied }}</h5>
+{% endif %}
+
   {% for job in listings %}
     <!-- Project One -->
     <div class="row rowForJobListings" style="border:groove black">
@@ -45,7 +52,7 @@
         <h3>Summary</h3>
         <p>{{ job.job_description }}</p>
         {% if perms.seekers.is_seeker %}
-          <a class="btn btn-primary" href="{% url 'Seekers:Application' %}">Apply</a>
+          <a class="btn btn-primary" href="{% url 'Seekers:Application' ListingID=job.pk%}">Apply</a>
         {% elif perms.recruiters.is_recruiter %}
           <a class="btn btn-primary" href="#">View Applicants</a>
         {% else %}
@@ -56,5 +63,8 @@
     <!-- /.row -->
     <hr>
   {% endfor %}
-    
+</div>
+{% endblock %}
+
+{% block secondSection %}
 {% endblock %}

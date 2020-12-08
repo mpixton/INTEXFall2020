@@ -41,7 +41,6 @@ class SeekerSkill(models.Model) :
     """
     Model for a Job Seeker-Skill-level instance. Allows the Job Seeker to have a Skill and level for that skill. 0 is not allowed because then its not a skill. A Job Seeker-Skill pairing must be unique. 
     """
-
     seeker = models.ForeignKey(to=Seeker, on_delete=models.DO_NOTHING)
     skill = models.ForeignKey(to=Skill, on_delete=models.PROTECT)
     level = models.CharField(max_length=1, choices=SKILL_LEVEL)
@@ -85,7 +84,7 @@ class Listing(models.Model) :
     contract_length = models.ForeignKey(to=ContractLength, on_delete=models.DO_NOTHING, null=True)
 
     def __str__(self):
-        return str(self.organization) + ' ' + str(self.listing_job_title)
+        return str(self.posted_by.org) + ' ' + str(self.listing_job_title)
 
     # def get_absolute_url(self):
     #     return reverse("model_detail", kwargs={"pk": self.pk})
@@ -112,11 +111,14 @@ class Application(models.Model) :
     date_applied = models.DateField()
 
     def __str__(self):
-        return str(self.seeker.person) + ' ' + str(self.listing)
+        return str(self.seeker.user) + ' ' + str(self.listing)
 
     def save(self, *args, **kwargs) :
         self.date_applied = DT.now().date()  
         super(Application, self).save(*args, **kwargs)
+    
+    class Meta: 
+        unique_together = ('seeker', 'listing')
 
     # def get_absolute_url(self):
     #     return reverse("model_detail", kwargs={"pk": self.pk})

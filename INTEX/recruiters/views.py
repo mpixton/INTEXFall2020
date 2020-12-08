@@ -39,3 +39,13 @@ def createJobPostingView(request) :
         return HttpResponse('Not a valid user')
 
     return redirect(reverse('Seekers:Profile', kwargs={'Type': 'recruiter', 'userID': request.user.pk}))
+
+def applicantsView(request) :
+    user = Recruiter.objects.get(user=request.user)
+    applicants = ""
+    # applications = Application.objects.filter(seeker__user=request.user)
+    context = {
+        "applicants" : applicants,    
+        "user" : user,
+    }
+    return render(request, 'recruiters/applicants.html', context=context)

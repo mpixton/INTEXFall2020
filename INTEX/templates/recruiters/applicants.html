@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block nameOfTab %}
+<title>Applicants</title>
+{% endblock %}
+
+{% block header %}
+<div class="container">
+    <h1>Applicants For Listing</h1>
+</div>
+{% endblock %}
+
+
+{% block firstSection %}
+
+<div class="container">
+    <div class="row rowForJobListings" style="border:groove black">
+        <h3>Applicants for {{ job.posted_by.org }}</h3>
+            
+        <ul>
+            {% for applicant in applicants %}
+                <p> {{ Application.objects.seeker }} {{ user.user.last_name }} applied for {{ job.listing_job_title }}</p>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

@@ -7,4 +7,5 @@ urlpatterns = [
     path("listing/add", v.postJobView, name="PostJob"),
     path("listing/post", v.createJobPostingView, name="CreateJob"),
     path("", v.indexView, name="Index"),
+    path("listing/applicants", v.applicantsView, name="Applicants"),
 ]   
