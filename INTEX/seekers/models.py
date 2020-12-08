@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from datetime import datetime as DT
-from recruiters.models import Organization, Recruiter
+from recruiters.models import Recruiter
 from seekers.choices import SKILL_LEVEL
 from django.contrib.auth.models import User
 
@@ -20,6 +20,11 @@ class Seeker(models.Model) :
 
     def __str__(self):
         return str(self.user.get_full_name()) + ' seeker'
+
+    class Meta :
+        permissions = [
+            ('is_seeker', 'Is a job seeker user')
+        ]
 
 
 class Skill(models.Model) :
@@ -72,7 +77,7 @@ class Listing(models.Model) :
     """
     Model for a Listing. Created by a Recruiter, affliated with an Organization. Allows Seekers to apply for employment at an Organization.
     """
-    organization = models.ForeignKey(to=Organization, on_delete=models.CASCADE)
+    posted_by = models.ForeignKey(to=Recruiter, on_delete=models.CASCADE)
     listing_job_title = models.CharField(max_length=50)
     job_description = models.TextField()
     location = models.CharField(max_length=50)
@@ -124,7 +129,6 @@ class JobOffer(models.Model) :
     extended_by = models.ForeignKey(to=Recruiter, on_delete=models.DO_NOTHING)
     extended_to = models.OneToOneField(to=Application, on_delete=models.DO_NOTHING)
     offer_job_title = models.CharField(max_length=50)
-    organization = models.OneToOneField(to=Organization, on_delete=models.CASCADE)
     contract = models.CharField(max_length=30)
     is_accepted = models.BooleanField()
     salary_upper = models.DecimalField(max_digits=8, decimal_places=2)

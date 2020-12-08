@@ -4,7 +4,6 @@ from django.forms import ValidationError
 from seekers.choices import ACCOUNT_TYPE, SKILL_LEVEL
 from recruiters.choices import SECTOR, SIZE
 from seekers.models import Seeker
-from recruiters.models import Organization
 
 
 #disable no-member syntax error
@@ -26,7 +25,7 @@ class PersonSignUpForm(BaseSignUpForm) :
 
 class RecruiterSignUpForm(PersonSignUpForm) :
     employee_job_title = forms.CharField()
-    org_name = forms.ModelChoiceField(queryset=Organization.objects.all())
+    org_name = forms.CharField()
 
     field_order = ['first_name', 'last_name', 'employee_job_title', 'email','username', 'password', 'repeat_password', 'phone']
 

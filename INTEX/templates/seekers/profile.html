@@ -7,12 +7,17 @@
 
 {% block header %}
 <div class="container">
-    <h1>Profile For {{ seeker.user.first_name }} {{ seeker.user.last_name }} </h1>
+    <h1>Profile for {{ profile.user.first_name }} {{ profile.user.last_name }} </h1>
         <div class="row rowForJobListings" style="border:groove black">
             <div class="col-md-5">
-                <h3>Username:  {{ seeker.user.username }}</h3>
-                <h3>Email: {{ seeker.user.email }}</h3>
-                <h3>Phone: {{ seeker.phone }}</h3>
+                <h3>Username:  {{ profile.user.username }}</h3>
+                <h3>Email: {{ profile.user.email }}</h3>
+                {% if perms.recruiters.is_recruiter %}
+                <h3>Organization: {{ profile.org }}</h3>
+                {% elif perms.seekers.is_seeker %}
+                <h3>Phone: {{ profile.phone }}</h3>
+                {% endif %}
+                {% if perms.seekers.is_seeker %}
                 <h3>Skills: </h3>   
                     <ul>
                         {% for skill in skills %}
@@ -20,5 +25,16 @@
                         {% endfor %}
                     </ul>
                 <a href="{% url 'Seekers:AddSkills' %}"><button type="submit" class="btn btn-primary">Add A Skill</button></a>
+                {% elif perms.recruiters.is_recruiter %}
+                <h3>Jobs at your organization: </h3>
+                <ul>
+                    {% for job in jobs %}
+                            <li>{{ job.listing_job_title }} at {{ job.location }} with contract specifications: {{ job.contract_type }} for {{ job.contract_length}} months</li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'Recruiters:PostJob' %}"><button type="submit" class="btn btn-primary">Add A Job</button></a>
+                {% endif %}
             </div>
+        </div>
+</div>
 {% endblock header %}

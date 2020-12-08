@@ -12,7 +12,13 @@ from seekers.forms import SeekerSignUpFrom, RecruiterSignUpForm, OrganizationSig
 from seekers.models import Listing, Seeker, SeekerSkill, Skill
 from django.contrib import messages
 # from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from recruiters.models import Recruiter, Organization
+from recruiters.models import Recruiter
+from django.db.models import Q
+import operator
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+from django.views.generic import ListView
+
+
 
 ACCOUNT_TYPES = {
     'R': 'recruiter',
@@ -37,6 +43,22 @@ def IndexPageView(request) :
     
     return render (request, 'seekers/index.html')
 
+
+
+def SearchBar(request, SearchString) :
+    print('Im in the search bar function')
+    print(request.method)
+    print(request.GET.get('search'))
+    search = request.GET.get('search')
+    print(search)
+    post = Listing.objects.all().filter(listing_job_title = search)
+    context = {
+        "listings" : post
+    }
+    return render(request, 'seekers/jobListings.html', context)
+
+       
+
 def searchJob(request) :
     """
     Allows a user to view all jobs matching a query string.
@@ -50,6 +72,7 @@ def jobListingsView(request) :
     """
     Shows the user a list of all job listings.
     """
+    print('Im the job listings view')
     data = Listing.objects.all()
 
     context = {
@@ -98,33 +121,28 @@ def profileView(request, Type, userID) :
     if Type == 'seeker' :
         data = Seeker.objects.get(user=request.user)
         skills = SeekerSkill.objects.filter(seeker__user=request.user).values_list('skill__skill_name', 'level', named=True)
+        
         if data is not None :
             context = {
-                "seeker" : data,    
+                "profile" : data,    
                 "skills" : skills,
             }
             return render(request, 'seekers/profile.html', context=context)
 
     elif Type == 'recruiter' :
-        data = Recruiter.objects.get(pk=userID)
+        data = Recruiter.objects.get(user=request.user)
+        jobs = Listing.objects.filter(posted_by=data)
 
         if data is not None :
             context = {
-                "seeker" : data,
+                "profile" : data,    
+                "jobs" : jobs,
             }
             return render(request, 'seekers/profile.html', context=context)
 
-    elif Type == 'organization' :
-        data = Organization.objects.get(pk=userID)
-
-        if data is not None :
-            context = {
-                "seeker" : data,
-            }
-            return render(request, 'seekers/profile.html', context=context)
     else :
         return HttpResponse("Not found")
-        
+    
 
 @login_required
 def applicationView(request) :
@@ -132,17 +150,21 @@ def applicationView(request) :
     form = applyForm(initial={'first_name':request.user.first_name, 'last_name':request.user.last_name, 'email':request.user.email})
 
     print(request.user)
-    print(Seeker.objects.get(user=request.user.pk))
-    print(Skill.objects.all())
+    print(Seeker.objects.get(user=request.user))
+    print(Skill.objects.filter(seekerskill__seeker=Seeker.objects.get(user=request.user)))
 
-    currentSeeker = Seeker.objects.get(pk=request.user)
-
+    # //TODOD FIx error
+    # currentSeeker = Seeker.objects.get(pk=request.user)
+    # TypeError: Field 'id' expected a number but got <SimpleLazyObject: <User: odawg5>>.
+    currentSeeker = Seeker.objects.get(user=request.user)
+    
     context={
-        "skills": Skill.objects.filter(seekerskill__seeker=currentSeeker.pk),
-        "form": form
+        "skills": Skill.objects.filter(seekerskill__seeker=currentSeeker),
+        "form": form,
+        "skillslevel": SeekerSkill.objects.filter(seeker=currentSeeker)
     } 
 
-    return render(request, 'seekers/addSkills.html', context)
+    return render(request, 'seekers/apply.html', context)
 
 def CreateAccountView(request, AccountType) :
     """
@@ -158,8 +180,6 @@ def CreateAccountView(request, AccountType) :
             form = SeekerSignUpFrom(request.POST)
         elif AccountType == 'R' :
             form = RecruiterSignUpForm(request.POST)
-        elif AccountType == 'O' :
-            form = OrganizationSignUpForm(request.POST)
         else :
             return HttpResponse('didn\'t pass the account type check')
         
@@ -185,6 +205,13 @@ def CreateAccountView(request, AccountType) :
                 my_group.user_set.add(newUser)
 
             elif AccountType == 'R':
+                print(form)
+                print(form.cleaned_data.get('first_name'))
+                print(form.cleaned_data.get('last_name'))
+                print(form.cleaned_data.get('username'))
+                print(form.cleaned_data.get('password'))
+                print(form.cleaned_data.get('employee_job_title'))
+                print(form.cleaned_data.get('org_name'))
                 first_name = form.cleaned_data.get('first_name')
                 last_name = form.cleaned_data.get('last_name')
                 job_title = form.cleaned_data.get('employee_job_title')
@@ -193,17 +220,11 @@ def CreateAccountView(request, AccountType) :
                 newUser.first_name = first_name
                 newUser.last_name = last_name
                 newUser.save()
+                print(newUser)
                 person = Recruiter.objects.create(user=newUser, emp_job_title=job_title, org=org)
+                print(person)
                 my_group = Group.objects.get(name='Recruiters')
-                my_group.user_set.add(newUser)
-
-            elif AccountType == 'O' :
-                org_name = form.cleaned_data.get('org_name')
-                size = form.cleaned_data.get('size')
-                sector = form.cleaned_data.get('sector')
-                newUser = User.objects.create_user(username=username, password=password, email=email)
-                person = Organization.objects.create(user=newUser,  org_name=org_name, size=size, sector=sector)
-                my_group = Group.objects.get(name='Organizations')
+                print(my_group)
                 my_group.user_set.add(newUser)
             
             # should be unreachable
@@ -228,8 +249,6 @@ def CreateAccountView(request, AccountType) :
             form = SeekerSignUpFrom()
         elif AccountType == 'R' :
             form = RecruiterSignUpForm()
-        elif AccountType == 'O' :
-            form = OrganizationSignUpForm()
         else :
             return HttpResponse('not a valid account type')
 

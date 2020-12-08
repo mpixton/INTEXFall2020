@@ -57,12 +57,40 @@
                 {% csrf_token %}
                 <button type="submit" class="btn btn-primary">I am a Recruiter</button>
             </form>
-            <br>
-            <form action="{% url 'Seekers:CreateAccount' AccountType='O' %}" method="GET">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-primary">I am an Organization</button>
-            </form>
+
         </div>
     </div>
 
-{% endblock %}
+{% endblock %} 
+{% block secondSection %}
+    <section class="testimonials text-center bg-light" >
+    <div class="container" >
+      <h2 class="mb-5" >Why join Black Cyber Recruiter?</h2>
+      <div class="row" >
+        <div class="col-lg-4">
+          <div class="testimonial-item mx-auto mb-5 mb-lg-0">
+            <img class="img-fluid rounded-circle mb-3" src="https://d2mkcg26uvg1cz.cloudfront.net/wp-content/uploads/elder-african-american-business-woman.jpg" alt="">
+            <h5>Margaret E.</h5>
+            <p class="font-weight-light mb-0">"As a recruiter, we love how easy it is to find great candidates to join our team!"</p>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="testimonial-item mx-auto mb-5 mb-lg-0">
+          <img class="img-fluid rounded-circle mb-3" src="https://blackbusinessblog178003515.files.wordpress.com/2020/10/sanmi.jpg?w=450" alt="">
+            <h5>Fred S.</h5>
+            <p class="font-weight-light mb-0">"BCR was a smooth and simple process. I found my dream job quickly and would recommend everyone else to do the same."</p>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="testimonial-item mx-auto mb-5 mb-lg-0">
+            <img class="img-fluid rounded-circle mb-3" src="https://secure.gravatar.com/avatar/f4060b88ed2f31ebb7d90df073d81c93?s=400&d=mm&r=g" alt="">
+            <h5>Sarah W.</h5>
+            <p class="font-weight-light mb-0">"Prior to joining BCR, the job hunt was a headache and discouraging. Im grateful for the resources and efficinecy of BCR!"</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr>
+  </section>
+{% endblock%}
+

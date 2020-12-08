@@ -8,19 +8,19 @@
 {% block header %}
 <div class="container" >
     <h1 style="align-self: center;">Job Listings</h1>
-    <form>
         <div class="form-row">
           <div class="col-12 col-md-9 mb-2 mb-md-0">
-            <form action="{% url 'Seekers:Search'  %}" method="GET">
-              <button type="submit" class="btn btn-block btn-lg btn-primary">Search</button>
-              <input type="Search" name='search' class="form-control form-control-lg" placeholder="Search by job title, location, company...">
+
+            <form  action="{% url 'Seekers:SearchBar' SearchString='intern' %}" method='GET'>
+              <input type="text" name='search' id='search' class="form-control form-control-lg" placeholder="Search by job title, location, company...">
+              <button type="submit" class="btn btn-block btn-lg btn-primary" id='search_submit'>Search</button>
             </form>
+         
           </div>
           <div class="col-12 col-md-3">
           
           </div>
         </div>
-      </form>
 </div>
 
 <br>
@@ -38,13 +38,19 @@
     <div class="row rowForJobListings" style="border:groove black">
       <div class="col-md-5">
           <h3>Job Title: {{ job.listing_job_title }}</h3>
-          <h3>Company: {{ job.organization.org_name }}</h3>
+          <h3>Company: {{ job.posted_by.org }}</h3>
           <h3>Location: {{ job.location }}</h3>
       </div>
       <div class="col-md-7">
         <h3>Summary</h3>
         <p>{{ job.job_description }}</p>
-        <a class="btn btn-primary" href="{% url 'Seekers:Application' %}">Apply</a>
+        {% if perms.seekers.is_seeker %}
+          <a class="btn btn-primary" href="{% url 'Seekers:Application' %}">Apply</a>
+        {% elif perms.recruiters.is_recruiter %}
+          <a class="btn btn-primary" href="#">View Applicants</a>
+        {% else %}
+          <a class="btn btn-primary" href="{% url 'Seekers:Login' %}">Login to Apply!</a>
+        {% endif %}
       </div>
     </div>
     <!-- /.row -->

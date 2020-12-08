@@ -1,5 +1,5 @@
 from django.urls import path
-import seekers.views as v 
+import seekers.views as v  
 
 app_name = 'Seekers'
 urlpatterns = [
@@ -13,5 +13,6 @@ urlpatterns = [
     path("logout", v.logoutView,name="Logout"),
     path("about", v.about, name ="About"),
     path("add_skills", v.addSkillsView, name="AddSkills"),
+    path("search_bar/<str:SearchString>", v.SearchBar, name="SearchBar"),
     path("", v.IndexPageView, name="Index"),
 ]   

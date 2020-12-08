@@ -28,13 +28,16 @@
     {{ form.email.label_tag }}
     {{ form.email }}
 
-
-    {% for skill in skills :%}
-    {{ field.label_tag}}
-    {{ field }}
-    {{ field.errors }}
+    <ul>
+    {% for skill in skills %}
+      <li>  {{ skill.skill_name }} {{ skill.seekerskill__level }} </li>
     {% endfor %}
-
+    </ul>
+    <ul>
+    {% for skill in skillslevel %}
+      <li>  {{ skill.level }} {{ skill.skill__name }} </li>
+    {% endfor %}
+    </ul>
     <div class="clearfix">
         <button type="submit" class="btn btn-primary">Apply</button>
         <a href="{% url 'Seekers:Index' %}"><button type="button" class="btn btn-primary">Cancel</button></a>

@@ -1,0 +1,590 @@
+[
+{
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$216000$a32asI3dFTBn$HmXkI2z9gYnT4DZK2bnMx2RxNxV7TS4PAtCBsoIaDig=",
+        "last_login": "2020-12-08T16:39:29.960Z",
+        "is_superuser": true,
+        "username": "micpix",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2020-12-08T06:09:36.161Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+        "password": "pbkdf2_sha256$216000$4lKAeDUHxqqy$Tn1tBcnWOVHm68XUx3+92c3cogla651ReImXZZcZN6k=",
+        "last_login": "2020-12-08T16:39:19.853Z",
+        "is_superuser": true,
+        "username": "chandler",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2020-12-08T06:20:44Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 4,
+    "fields": {
+        "password": "pbkdf2_sha256$216000$jVLl4WsRHkJL$fBZ6ffM7XjOWWeNkM4L4D+tGtvGY+lhLH7DULORwBoY=",
+        "last_login": null,
+        "is_superuser": true,
+        "username": "owen",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2020-12-08T06:20:58Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 5,
+    "fields": {
+        "password": "pbkdf2_sha256$216000$X82chBjvHeFE$OgLy1/H6MCa3jO2Fyj4inolmmFw9f9SDlzAIEkVYWJo=",
+        "last_login": null,
+        "is_superuser": true,
+        "username": "samantha",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2020-12-08T06:21:33Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 8,
+    "fields": {
+        "password": "pbkdf2_sha256$216000$erfBJTbs3nF4$ngEDqZdg08GtSUVPxjLVhVKx8I1z+6bTV9hRxPEX9N4=",
+        "last_login": "2020-12-08T06:24:44.026Z",
+        "is_superuser": false,
+        "username": "johnD",
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "johndoe@yahoo.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2020-12-08T06:24:43.639Z",
+        "groups": [
+            1
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 9,
+    "fields": {
+        "password": "pbkdf2_sha256$216000$heFqOJh9oBuS$fOXZHt6qYkiycj1aNrpsIiKIwGyg9jhod+yLaxwCho0=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "byu",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2020-12-08T06:30:06.960Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 13,
+    "fields": {
+        "password": "pbkdf2_sha256$216000$PgmpSqYu6u9H$jRtJqIH9xx4OR0lPxOC50mWHz0pjgC5SU/U4m9TjNYo=",
+        "last_login": "2020-12-08T16:45:10.087Z",
+        "is_superuser": false,
+        "username": "morris",
+        "first_name": "Morris",
+        "last_name": "The Recruiter",
+        "email": "byu@byu.edu",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2020-12-08T06:32:38Z",
+        "groups": [
+            2
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 16,
+    "fields": {
+        "password": "pbkdf2_sha256$216000$6b0n6JdvLKpo$0bPFzdqyDd0fv7A0lKWG1oJ0u4sSQ9VAiMPpzsuCVBI=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "chadd",
+        "first_name": "Chad",
+        "last_name": "Bad",
+        "email": "byu@byu.edu",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2020-12-08T06:35:01.975Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 17,
+    "fields": {
+        "password": "pbkdf2_sha256$216000$epsOHjfRNcJk$CXsZ9IgLsSzs9mm254Al9kVVwHk+Z4Q3sxupoQ+Dj2Y=",
+        "last_login": "2020-12-08T06:35:28.817Z",
+        "is_superuser": false,
+        "username": "rmoney",
+        "first_name": "recruiter",
+        "last_name": "mcrecruit",
+        "email": "swagmoney@gmail.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2020-12-08T06:35:28.415Z",
+        "groups": [
+            2
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 19,
+    "fields": {
+        "password": "pbkdf2_sha256$216000$kZYnZAHwqrN2$xtXqa+KObdUb1ORnnCcGXk1ul7Sj0fqfqnNeX3KFuMk=",
+        "last_login": "2020-12-08T16:49:23.474Z",
+        "is_superuser": false,
+        "username": "chaddddd",
+        "first_name": "Chad",
+        "last_name": "Bad",
+        "email": "byu@byu.edu",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2020-12-08T06:36:05.267Z",
+        "groups": [
+            2
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 22,
+    "fields": {
+        "password": "pbkdf2_sha256$216000$7hFHDNLvk1lZ$MHxMLBGqeb/iIvpLLuK4Dl0ezFRIXdwYxbf/nals024=",
+        "last_login": "2020-12-08T06:41:26.945Z",
+        "is_superuser": false,
+        "username": "russ",
+        "first_name": "",
+        "last_name": "",
+        "email": "pancakes@gmail.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2020-12-08T06:41:26.545Z",
+        "groups": [
+            3
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 23,
+    "fields": {
+        "password": "pbkdf2_sha256$216000$R3GH5cHLEdz5$LAcpFPE/5rAkeTt2F3ElkAx+xOWh1GiNrE1+b5FngCo=",
+        "last_login": "2020-12-08T16:56:58.892Z",
+        "is_superuser": false,
+        "username": "hoppy",
+        "first_name": "",
+        "last_name": "",
+        "email": "ihop@gmail.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2020-12-08T16:56:58.535Z",
+        "groups": [
+            3
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 24,
+    "fields": {
+        "password": "pbkdf2_sha256$216000$ZoPnUhvhoQXn$B5gQbG3bkwJm7/B9Ur7UajYKcz4c+8LYbN7OozsOWTs=",
+        "last_login": "2020-12-08T16:57:47.966Z",
+        "is_superuser": false,
+        "username": "monstersinc",
+        "first_name": "",
+        "last_name": "",
+        "email": "monster@mail.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2020-12-08T16:57:47.616Z",
+        "groups": [
+            3
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "pk": 1,
+    "fields": {
+        "app_label": "admin",
+        "model": "logentry"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "pk": 2,
+    "fields": {
+        "app_label": "auth",
+        "model": "permission"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "pk": 3,
+    "fields": {
+        "app_label": "auth",
+        "model": "group"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "pk": 4,
+    "fields": {
+        "app_label": "auth",
+        "model": "user"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "pk": 5,
+    "fields": {
+        "app_label": "contenttypes",
+        "model": "contenttype"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "pk": 6,
+    "fields": {
+        "app_label": "sessions",
+        "model": "session"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "pk": 7,
+    "fields": {
+        "app_label": "seekers",
+        "model": "application"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "pk": 8,
+    "fields": {
+        "app_label": "seekers",
+        "model": "contractlength"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "pk": 9,
+    "fields": {
+        "app_label": "seekers",
+        "model": "contracttype"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "pk": 10,
+    "fields": {
+        "app_label": "seekers",
+        "model": "listing"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "pk": 11,
+    "fields": {
+        "app_label": "seekers",
+        "model": "seeker"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "pk": 12,
+    "fields": {
+        "app_label": "seekers",
+        "model": "skill"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "pk": 13,
+    "fields": {
+        "app_label": "seekers",
+        "model": "listingskill"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "pk": 14,
+    "fields": {
+        "app_label": "seekers",
+        "model": "joboffer"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "pk": 15,
+    "fields": {
+        "app_label": "seekers",
+        "model": "seekerskill"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "pk": 16,
+    "fields": {
+        "app_label": "recruiters",
+        "model": "organization"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "pk": 17,
+    "fields": {
+        "app_label": "recruiters",
+        "model": "recruiter"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "dmmvo2v8sp0ug44hy5npud1fi30djb52",
+    "fields": {
+        "session_data": ".eJxVjEEOwiAQRe_C2hAKA4JL9z0DGZhBqoYmpV0Z765NutDtf-_9l4i4rTVunZc4kbiIQZx-t4T5wW0HdMd2m2We27pMSe6KPGiX40z8vB7u30HFXr-1Ip-KU4DGBAZnSgEfAJkH0KQQXXA6-5xVMIRWWWvZW9RAhTWncxbvD-OYODI:1kmg1R:klZ-u0oCo89prWaaiCyJBWAwafG49GeUOLW54QpmRpA",
+        "expire_date": "2020-12-22T16:39:29.962Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "gnouo2pasdnzflcyspcxb8kan693efh6",
+    "fields": {
+        "session_data": ".eJxVjDsOwjAQBe_iGlms409MSZ8zWF7vMwmgRMqnQtwdIqWA9s3Me6mUt7VP24I5DaIuihp1-h05lwfGncg9j7dJl2lc54H1ruiDLrqbBM_r4f4d9HnpvzUqM6S1tWmq50DC3rniGRRRo2SyJYDhDSBgqoaCt22NriVztsTq_QFNNDkw:1kmg6w:QFFNDKduIkUfLHEzFo-N456hFoBdfTCMmnTOMDuO2yA",
+        "expire_date": "2020-12-22T16:45:10.089Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "yn0hlfwqw5ztvxsygfx3mvgnz2vwirdt",
+    "fields": {
+        "session_data": ".eJxVjEEOwiAQAP_C2RC64NJ69O4bml0WpGogKe3J-HdD0oNeZybzVjPtW573Ftd5EXVRw6ROv5ApPGPpRh5U7lWHWrZ1Yd0Tfdimb1Xi63q0f4NMLfcvkHc-MrpA5MXDiIHJgA3gyRMMSQwajkk4TqM1gIKDnRzg2aFwUp8vE6s4KQ:1kmgB1:edNpA1uMP7MC-B2EzNsgoolEK0Pg_DWYAINNe8GibJ8",
+        "expire_date": "2020-12-22T16:49:23.476Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "zdgzc22lwx6tzt46cec53wokzmfq49d3",
+    "fields": {
+        "session_data": ".eJxVjEEOwiAQRe_C2hAKA4JL9z0DGZhBqoYmpV0Z765NutDtf-_9l4i4rTVunZc4kbiIQZx-t4T5wW0HdMd2m2We27pMSe6KPGiX40z8vB7u30HFXr-1Ip-KU4DGBAZnSgEfAJkH0KQQXXA6-5xVMIRWWWvZW9RAhTWncxbvD-OYODI:1kmWCL:f_AlWHDSI7FrStcWwqtvANwtP1CzbToLQpy6TWivUsE",
+        "expire_date": "2020-12-22T06:10:05.426Z"
+    }
+},
+{
+    "model": "seekers.seeker",
+    "pk": 3,
+    "fields": {
+        "user": 8,
+        "has_resume": false,
+        "phone": "22222222222222"
+    }
+},
+{
+    "model": "seekers.skill",
+    "pk": 1,
+    "fields": {
+        "skill_name": "AI"
+    }
+},
+{
+    "model": "seekers.skill",
+    "pk": 2,
+    "fields": {
+        "skill_name": "Word"
+    }
+},
+{
+    "model": "seekers.skill",
+    "pk": 3,
+    "fields": {
+        "skill_name": "Excel"
+    }
+},
+{
+    "model": "seekers.skill",
+    "pk": 4,
+    "fields": {
+        "skill_name": "Python"
+    }
+},
+{
+    "model": "seekers.seekerskill",
+    "pk": 1,
+    "fields": {
+        "seeker": 3,
+        "skill": 1,
+        "level": "1"
+    }
+},
+{
+    "model": "seekers.contracttype",
+    "pk": 1,
+    "fields": {
+        "contract_type": "Internship"
+    }
+},
+{
+    "model": "seekers.contracttype",
+    "pk": 2,
+    "fields": {
+        "contract_type": "Franchise"
+    }
+},
+{
+    "model": "seekers.contracttype",
+    "pk": 3,
+    "fields": {
+        "contract_type": "Peasant"
+    }
+},
+{
+    "model": "seekers.contractlength",
+    "pk": 1,
+    "fields": {
+        "contract_length": 1
+    }
+},
+{
+    "model": "seekers.contractlength",
+    "pk": 2,
+    "fields": {
+        "contract_length": 2
+    }
+},
+{
+    "model": "seekers.contractlength",
+    "pk": 3,
+    "fields": {
+        "contract_length": 3
+    }
+},
+{
+    "model": "seekers.contractlength",
+    "pk": 4,
+    "fields": {
+        "contract_length": 4
+    }
+},
+{
+    "model": "seekers.contractlength",
+    "pk": 5,
+    "fields": {
+        "contract_length": 5
+    }
+},
+{
+    "model": "seekers.contractlength",
+    "pk": 6,
+    "fields": {
+        "contract_length": 6
+    }
+},
+{
+    "model": "seekers.contractlength",
+    "pk": 7,
+    "fields": {
+        "contract_length": 7
+    }
+},
+{
+    "model": "seekers.contractlength",
+    "pk": 8,
+    "fields": {
+        "contract_length": 8
+    }
+},
+{
+    "model": "seekers.contractlength",
+    "pk": 9,
+    "fields": {
+        "contract_length": 9
+    }
+},
+{
+    "model": "seekers.contractlength",
+    "pk": 10,
+    "fields": {
+        "contract_length": 10
+    }
+},
+{
+    "model": "seekers.contractlength",
+    "pk": 11,
+    "fields": {
+        "contract_length": 11
+    }
+},
+{
+    "model": "seekers.contractlength",
+    "pk": 12,
+    "fields": {
+        "contract_length": 12
+    }
+},
+{
+    "model": "seekers.contractlength",
+    "pk": 13,
+    "fields": {
+        "contract_length": 15
+    }
+},
+{
+    "model": "seekers.contractlength",
+    "pk": 14,
+    "fields": {
+        "contract_length": 18
+    }
+},
+{
+    "model": "seekers.contractlength",
+    "pk": 15,
+    "fields": {
+        "contract_length": 24
+    }
+}
+]

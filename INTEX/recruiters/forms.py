@@ -3,7 +3,6 @@
 from django import forms
 from recruiters.choices import SIZE, SECTOR
 from seekers.models import ContractType, ContractLength
-from recruiters.models import Organization
 
 class CreateOrgForm(forms.Form) :
     org_name = forms.CharField(label='Organization Name')
@@ -18,7 +17,6 @@ class CreateOrgForm(forms.Form) :
 
 class PostJobForm(forms.Form) :
     job_title = forms.CharField(label='Job Title')
-    organization = forms.ModelChoiceField(queryset=Organization.objects.all())
     job_description = forms.CharField(label='Job Description')
     location = forms.CharField(label='Location')
     contract_length = forms.ModelChoiceField(queryset=ContractLength.objects.all())
