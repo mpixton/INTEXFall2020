@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static %} 
 
 {% block nameOfTab %}
 <title>Applicants</title>
@@ -7,7 +7,7 @@
 
 {% block header %}
 <div class="container">
-    <h1>Applicants For Listing</h1>
+    <h1>Applications Submitted</h1>
 </div>
 {% endblock %}
 
@@ -16,13 +16,19 @@
 
 <div class="container">
     <div class="row rowForJobListings" style="border:groove black">
-        <h3>Applicants for {{ job.posted_by.org }}</h3>
-            
+        <div class="col-lg-12">
+        <h3>Recruiter: {{ recruiter.user.first_name }} {{ recruiter.user.last_name}}</h3> 
+        <h3>Organization: {{ recruiter.org }}</h3>
         <ul>
-            {% for applicant in applicants %}
-                <p> {{ Application.objects.seeker }} {{ user.user.last_name }} applied for {{ job.listing_job_title }}</p>
+            {% for job in jobs %}
+                <p> Job Posting Title: {{ job.listing_job_title }}  </p>
+                {% for applicant in job.application_set.all %}
+                    <p> &emsp; Applicant: {{ applicant.seeker.user.first_name}} {{ applicant.seeker.user.last_name}} &emsp; &emsp; Contact: {{ applicant.seeker.user.email}}&emsp; &emsp; Date Applied: {{ applicant.date_applied}}</p>
+                {% endfor %}
+                <br>
             {% endfor %}
         </ul>
+        </div>
     </div>
 </div>
 {% endblock %}

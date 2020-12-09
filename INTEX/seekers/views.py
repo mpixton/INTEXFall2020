@@ -14,11 +14,13 @@ from recruiters.models import Recruiter
 from django.contrib import messages
 # from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from recruiters.models import Recruiter
-from django.db.models import Q
+from django.db.models import Q, ObjectDoesNotExist
 import operator
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.views.generic import ListView
 from django.db import IntegrityError
+import urllib.request as lib
+import json 
 
 
 
@@ -66,9 +68,19 @@ def searchJob(request) :
 
 def jobListingsView(request) :
     """
-    Shows the user a list of all job listings.
+    Shows the user a list of all job listings \n
+    Only called on GET, takes no parameters \n
     """
-    data = Listing.objects.all()
+    # checks if the current user is anonymous or a recruiter
+    # if anonymous, show all listings
+    if request.user.is_anonymous :
+        data = Listing.objects.all()
+    # if recruiter, then only show listing where the poster belongs to the recruiter's org
+    elif request.user.has_perm('recruiters.is_recruiter') :
+        data = Listing.objects.filter(posted_by__org=Recruiter.objects.get(user=request.user).org)
+    # display all listings
+    else :
+        data = Listing.objects.all()
 
     context = {
         "listings" : data
@@ -76,42 +88,11 @@ def jobListingsView(request) :
 
     return render (request, 'seekers/jobListings.html', context)
 
-def SearchResultsView(request, SearchString) :
-    """
-    Displays the results of the search. \n
-    SearchString -> a string to match against job_title, location, org_name
-    """
-    jobTitle = request.GET['listingJobTitle']
-    data = Listing.objects.filter(job_title = jobTitle)
-    if data.count() > 0:
-        context = {
-            "listings" : data
-        }
-        return render(request, 'seekers/jobListings.html', context)
-    else:
-        organization = request.GET['organization']
-        data = Listing.objects.filter(org = organization)
-        if data.count() > 0 :
-            context = {
-            "listings" : data
-            }
-            return render(request, 'seekers/jobListings.html', context)
-        else :
-            location = request.GET['city'] 
-            data = Listing.objects.filter(job_loc = location)
-            if data.count() > 0 :
-                context = {
-                "listings" : data
-                }
-                return render(request, 'seekers/jobListings.html', context)
-            else :
-                return HttpResponse("Not found")
 
-@login_required
 def profileView(request, Type, userID) :
     """
-    Allows the user to view their own profile information. \n
-    userID -> str, the pk of the User
+    Allows the user to view their own profile information \n
+    GET parameters: Type-> type of account to be viewed, userID-> pk of the user to view the profile of \n
     """
     if Type == 'seeker' :
         data = Seeker.objects.get(user=request.user)
@@ -125,8 +106,11 @@ def profileView(request, Type, userID) :
             return render(request, 'seekers/profile.html', context=context)
 
     elif Type == 'recruiter' :
-        data = Recruiter.objects.get(user=request.user)
-        jobs = Listing.objects.filter(posted_by=data)
+        try :
+            data = Recruiter.objects.get(user=request.user)
+            jobs = Listing.objects.filter(posted_by=data)
+        except ObjectDoesNotExist :
+            pass
 
         if data is not None :
             context = {
@@ -139,11 +123,10 @@ def profileView(request, Type, userID) :
         return HttpResponse("Not found")
     
 
-@login_required
 def applicationView(request, ListingID) :
     """
-    Handles serving a blank application for Seeker review (GET method) or creates an application object (POST method) associated with the Seeker. \n
-    Takes no parameters.
+    Handles serving a blank application for Seeker review (GET method) or creates an application object (POST method) associated with the Seeker \n
+    GET parameters: ListingID-> pk of the Listing object to apply for \n
     """
     # checks if method is GET or POST
     # if GET, render blank form
@@ -197,20 +180,23 @@ def applicationView(request, ListingID) :
 def CreateAccountView(request, AccountType) :
     """
     Allows an anonymous user to create an account. \n
+    GET parameters: AccountType-> type of account to create \n
     Account Types: S -> Seeker, O -> Organization, R -> Recruiter \n
-    If passed a parameter that doesn't match, returns a 404 error.
+    If passed a parameter that doesn't match, returns a 404 error. \n
     """
     # checks if POST or GET, if not, 404
     if request.method == 'POST':
         # check if valid account type else 4040
         # if valid account type, puts the data in the proper form
         if AccountType == 'S' :
-            form = SeekerSignUpFrom(request.POST)
+            form = SeekerSignUpFrom(request.POST, request.FILES['resume'])
         elif AccountType == 'R' :
             form = RecruiterSignUpForm(request.POST)
         else :
             return HttpResponse('didn\'t pass the account type check')
         
+        print(form)
+        print(request.FILES['resume'])
         # validates the form else 404
         if form.is_valid():
             username = form.cleaned_data.get('username')
@@ -222,13 +208,13 @@ def CreateAccountView(request, AccountType) :
                 first_name = form.cleaned_data.get('first_name')
                 last_name = form.cleaned_data.get('last_name')
                 phone = form.cleaned_data.get('phone')
-                # resume = form.cleaned_data.get('resume')
+                resume = form.cleaned_data.get('resume')
                 # skill = form.cleaned_data.get('skill')
                 newUser = User.objects.create_user(username=username, password=password, email=email)
                 newUser.first_name = first_name
                 newUser.last_name = last_name
                 newUser.save()
-                person = Seeker.objects.create(user=newUser, phone=phone, has_resume=False)
+                person = Seeker.objects.create(user=newUser, phone=phone, resume=resume, has_resume=True)
                 my_group = Group.objects.get(name='Seekers')
                 my_group.user_set.add(newUser)
 
@@ -305,7 +291,6 @@ def loginView(request) :
             if user is not None:
                 # logs in the user and redirects to the home page
                 login(request, user)
-                messages.info(request, f"You are now logged in as {username}")
                 return redirect(reverse('Seekers:Index'))
 
             else :
@@ -337,6 +322,12 @@ def logoutView(request) :
     return redirect("Seekers:Index")
 
 def addSkillsView(request) :
+    """
+    If called by GET, returns a blank form for a job seeker to fill out. If called via a POST, adds a skills to job seeker. \n
+    Take no GET parameters.
+    """
+    # check the method of the action
+    # if POST, process the filled out form
     if request.method == 'POST' :
         form = AddSkillsForm(request.POST)
         if form.is_valid() :
@@ -347,10 +338,11 @@ def addSkillsView(request) :
             return redirect(reverse('Seekers:Profile', kwargs={'Type': 'seeker', 'userID': seeker.pk}))
         else :
             return Http404()
+    # if GET, render a blank form to fill out
     elif request.method == 'GET' :
-
+        # instantiate blank form
         form = AddSkillsForm()
-        
+        # return the blank 
         return render(request = request,
                 template_name = "seekers/addSkills.html",
                 context={"form":form})
@@ -359,10 +351,54 @@ def addSkillsView(request) :
 
 
 def userApplicationsView(request) :
-    user = Seeker.objects.get(user=request.user)
+    print(request.user.is_authenticated)
+    seeker = Seeker.objects.get(user=request.user)
     applications = Application.objects.filter(seeker__user=request.user)
     context = {   
         "applications" : applications,
-        "user" : user,
+        "seeker" : seeker,
     }
     return render(request, 'seekers/applications.html', context=context)
+
+
+def recommenderDisplayView(request) : 
+    data =  {
+        "Inputs": {
+            "input1": {
+                "ColumnNames": ["user_id", "job_title"],
+                "Values": [["72", "Forecast Systems Manager"]]
+            }
+        },
+        "GlobalParameters": {}
+    }
+
+    body = str.encode(json.dumps(data))
+    url = 'https://ussouthcentral.services.azureml.net/workspaces/f6ae6696799b45cbb93347b6e9d8ad6f/services/c88e62fc36a6497f846cab8bac6fb5b3/execute?api-version=2.0&details=true'
+    api_key = 'CkEa9dvd5sBro9L5f04z1zqFpm1Drxp4vnr+Vhhd5EKbv9gBXNrX/aPZnFUSmUdjJKJLB0gbjQQtcSJugYhf7g==' # Replace this with the API key for the web service
+    headers = {'Content-Type':'application/json', 'Authorization':('Bearer '+ api_key)}
+    # generate request
+    req = lib.Request(url, body, headers) 
+    # Open/retrieve the request
+    response = lib.urlopen(req)
+    # Reads the request
+    result = response.read()
+    #cast result to json
+    result = json.loads(result)
+
+    prediction = result['Results']['output1']['value']['Values'][0]
+    predictionData = {
+        'Job_1' : str(f'1. {prediction[1]}'), 
+        'Job_2' : str(f'2. {prediction[2]}'),
+        'Job_3' : str(f'3. {prediction[3]}'),
+        'Job_4' : str(f'4. {prediction[4]}'),
+        'Job_5' : str(f'5. {prediction[5]}'),
+        }
+    
+    return render(request, 'seekers/recommender.html', predictionData)
+
+
+def learnMoreView (request) :
+
+
+
+    return render(request, 'seekers/learnMore.html')

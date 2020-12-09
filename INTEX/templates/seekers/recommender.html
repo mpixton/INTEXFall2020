@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block nameOfTab %}
+<title>Trending Jobs</title>
+{% endblock %}
+
+{% block header %}
+<div class="container">
+    <h1>Trending Jobs</h1>
+</div>
+{% endblock %}
+
+{% block firstSection %}
+<div class="container">
+    <h5>What does this mean?</h5>
+    <h8>Black Cyber Recruiter has done advance metric tests on job application data.
+            We run predictive analysis on an individual's matching skills and the job title for those skills.
+            That prediction gives us a list of jobs that are trending in the market for the time being.
+            Consider looking into these jobs if they peek your interest!
+    </h8> <br>
+    <br>
+    <p style="text-decoration: underline">Top 5 Jobs!</p>
+    <p>{{ Job_1 }}</p>
+    <p>{{ Job_2 }}</p>
+    <p>{{ Job_3 }}</p>
+    <p>{{ Job_4 }}</p>
+    <p>{{ Job_5 }}</p>
+    <a href="{% url 'Seekers:LearnMore' %}"><button type="button" class="btn btn-primary">Learn More</button></a>
+</div>
+
+<div class="container"> 
+
+</div>
+{% endblock %}

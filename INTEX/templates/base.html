@@ -43,20 +43,25 @@
       <div>
         <a class="btn btn-primary" href="{% url 'Seekers:Index' %}">Home</a>
         <a class="btn btn-primary" href="{% url 'Seekers:JobListings' %}">Jobs</a>
+        <a class="btn btn-primary" href="{% url 'Seekers:TrendingJobs' %}">Trending</a>
+
         {% if perms.recruiters.is_recruiter %}
-        <a class="btn btn-primary" href="{% url 'Recruiters:PostJob' %}">Post a Job</a>
-        <a class="btn btn-primary" href="{% url 'Recruiters:Applicants' %}">View Applicants</a>
+          <a class="btn btn-primary" href="{% url 'Recruiters:CreateJob' %}">Post a Job</a>
+          <a class="btn btn-primary" href="{% url 'Recruiters:Applicants' %}">View Applicants</a>
         {% endif %}
+
         <a class="btn btn-primary" href="{% url 'Seekers:About' %}">About Us</a>
+
         {% if perms.recruiters.is_recruiter %}
-        <a class="btn btn-primary" href="{% url 'Seekers:Profile' Type='recruiter' userID=request.user.pk %}">Profile</a>
+          <a class="btn btn-primary" href="{% url 'Seekers:Profile' Type='recruiter' userID=request.user.pk %}">Profile</a>
         {% elif perms.seekers.is_seeker %}
-        <a class="btn btn-primary" href="{% url 'Seekers:Profile' Type='seeker' userID=request.user.pk %}">Profile</a>
+          <a class="btn btn-primary" href="{% url 'Seekers:Profile' Type='seeker' userID=request.user.pk %}">Profile</a>
         {% endif %}
+
         {% if user.is_authenticated %}
-        <a class="btn btn-primary" href="{% url 'Seekers:Logout' %}">Logout</a>
+          <a class="btn btn-primary" href="{% url 'Seekers:Logout' %}">Logout</a>
         {% else %}
-        <a class="btn btn-primary" href="{% url 'Seekers:Login' %}">Login/Create Account</a>
+          <a class="btn btn-primary" href="{% url 'Seekers:Login' %}">Login/Create Account</a>
         {% endif %}
       </div>
     </div>
@@ -109,8 +114,8 @@
         </div>
         <div class="col-lg-4">
           <div class="features-icons-item mx-auto mb-0 mb-lg-3">
-            <h3>Are you a Company?</h3>
-            <p class="lead mb-0">Black Cyber Recruiter encourages all companies to enroll. Do so today!</p>
+            <h3>New to the Job Market?</h3>
+            <p class="lead mb-0">Black Cyber Recruiter has all the latest trending job research. Check it out today!</p>
           </div>
         </div>
       </div>

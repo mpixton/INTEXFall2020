@@ -6,7 +6,7 @@ register = template.Library()
 # takes the rating level numeric value and returns the human-readable string
 def returnRating(value) :
     for skill in SKILL_LEVEL :
-        if skill[0] == int(value) :
+        if str(skill[0]) == str(value) :
             return skill[1]
 
 register.filter('returnRating', returnRating)

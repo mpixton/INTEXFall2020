@@ -31,10 +31,10 @@ class RecruiterSignUpForm(PersonSignUpForm) :
 
 class SeekerSignUpFrom(PersonSignUpForm) :
     phone = forms.CharField(max_length=14, required=False)
-    # resume = forms.FileField()
+    resume = forms.FileField(label='Resume')
     # skill = forms.ModelChoiceField(Skill.objects.all())
 
-    field_order = ['first_name', 'last_name', 'phone', 'email','username', 'password', 'repeat_password', 'phone'] 
+    field_order = ['first_name', 'last_name', 'phone', 'email','username', 'password', 'repeat_password', 'resume'] 
 class OrganizationSignUpForm(BaseSignUpForm) :
     org_name = forms.CharField(label='Organization Name')
     size = forms.CharField(
@@ -67,12 +67,5 @@ class applyForm(forms.Form) :
     first_name = forms.CharField()
     last_name = forms.CharField()
     email = forms.EmailField()
-
-# class postJob(forms.Form) :
-#     organization = forms.CharField()
-#     listing_job_title = forms.CharField()
-#     job_description = forms.CharField()
-#     location = forms.CharField()
-#     contract_type = forms.ChoiceField(choices=CONTRACT)
 
     

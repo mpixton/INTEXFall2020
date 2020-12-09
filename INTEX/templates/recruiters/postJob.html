@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %} 
+{% load seekers_extras %}
 
 {% block nameOfTab %}
 <title>Post a Job</title>
@@ -14,23 +15,48 @@
 
 {% block firstSection %}
 
-    <form action= "{% url 'Recruiters:CreateJob' %}" method='POST' style="border:1px solid #ccc">
-        <div class="container">
-        <h4>Please fill in this form to create a job listing.</h4>
-        <hr>
-
-        {% csrf_token %}
-
-        {% for field in form %}
-            {{ field.label_tag}}
-            {{ field }}
+    <form action= "{{ request.get_full_path }}" method='POST'>
+        <div class="container" style="border:1px solid #ccc">
+            <h4>Please fill in this form to create a job listing.</h4>
             <br>
-        {% endfor %}
 
-        <div class="clearfix">
-            <button type="submit" class="btn btn-primary">Post Job</button>
-            <a href="{% url 'Seekers:Index' %}"><button type="button" class="btn btn-primary">Cancel</button></a>
-        </div>
+            {% csrf_token %}
+
+            {% for field in form %}
+                {{ field.label_tag}}
+                {{ field }}
+                <br>
+            {% endfor %}
+
+            {% if ListingSkills is not None %}
+            <h4>These skills are associated with this listing:</h4>
+            {% endif %}
+
+            {% for skill in ListingSkills  %}
+                <p> 
+                {{skill.skill.skill_name|title}} - Skill Level: {{skill.level|returnRating}} {% if skill.is_required %}Required{% else %}Preferred{% endif %} 
+                <a href="{% url 'Recruiters:EditListingSkill' ListingSkillID=skill.pk %}"><button type="button" class="btn btn-primary">Edit</button></a> 
+                <a href="{% url 'Recruiters:DeleteListingSkill' ListingSkillID=skill.pk %}"><button type="button" class="btn btn-primary">Delete</button></a> 
+                </p>
+            {% empty %}
+            <p>No skills are associated with this listing yet. Click Add Skill to add a skill to this listing.</p>
+            {% endfor %}
+
+            <div class="clearfix">
+                {% if 'addListing' in request.path %}
+                <button type="submit" class="btn btn-primary" name="postJob">Post Job</button>
+                {% endif %}
+                {% if 'editListing' in request.path %}
+                <button type="submit" class="btn btn-primary" name="saveChanges">Save Changes </button>
+                {% endif %}
+                {% if 'deleteListing' in request.path %}
+                <button type="submit" class="btn btn-primary" name="deleteJob">Delete Listing</button>
+                {% endif %}
+                <a href="{% url 'Seekers:Profile' Type='recruiter' userID=user.pk %}"><button type="button" class="btn btn-primary">Cancel</button></a>
+                {% if ListingID is not None %}
+                <a href="{% url 'Recruiters:AddListingSkill' ListingID=ListingID %}"><button type="button" class="btn btn-primary">Add Skill</button></a>
+                {% endif %}
+            </div>
         </div>
     </form>
 

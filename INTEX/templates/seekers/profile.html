@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+s{% extends 'base.html' %}
 {% load static %}
 {% load seekers_extras %}
 
@@ -10,14 +10,14 @@
 <div class="container">
     <h1>Profile for {{ profile.user.first_name }} {{ profile.user.last_name }} </h1>
         <div class="row rowForJobListings" style="border:groove black">
-            <div class="col-md-5">
+            <div class="col-lg-12">
                 <h3>Username:  {{ profile.user.username }}</h3>
                 <h3>Email: {{ profile.user.email }}</h3>
                 {% if perms.recruiters.is_recruiter %}
                 <h3>Organization: {{ profile.org }}</h3>
                 {% elif perms.seekers.is_seeker %}
 
-                <h3>Phone: {{ profile.phone }}</h3>
+                <h3>Phone: {{ profile.phone }}</h3> 
                 {% endif %}
                 {% if perms.seekers.is_seeker %}
                 <h3>Skills: </h3>   
@@ -32,10 +32,17 @@
                 <h3>Jobs at your organization: </h3>
                 <ul>
                     {% for job in jobs %}
-                            <li>{{ job.listing_job_title }} at {{ job.location }} with contract specifications: {{ job.contract_type }} for {{ job.contract_length}} months</li>
+                            <li>{{ job.listing_job_title }} at {{ job.location }} with contract specifications: {{ job.contract_type }} for {{ job.contract_length}} months
+                            {% if perms.seekers.change_listing %}
+                            <a href={% url 'Recruiters:EditListing' ListingID=job.pk %}><button type=button class="btn btn-primary">Edit</button></a>
+                            {% endif %}
+                            {% if perms.seekers.delete_listing %}
+                            <a href={% url 'Recruiters:DeleteListing' ListingID=job.pk %}><button class="btn btn-primary" type=button>Delete</button></a>
+                            {% endif %}
+                            </li>
                     {% endfor %}
                 </ul>
-                <a href="{% url 'Recruiters:PostJob' %}"><button type="submit" class="btn btn-primary">Add A Job</button></a>
+                <a href="{% url 'Recruiters:CreateJob' %}"><button type="submit" class="btn btn-primary">Add A Job</button></a>
                 {% endif %}
             </div>
         </div>

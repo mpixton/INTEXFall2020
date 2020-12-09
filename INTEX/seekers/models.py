@@ -17,6 +17,7 @@ class Seeker(models.Model) :
     user = models.OneToOneField(to=User, on_delete=models.CASCADE)
     has_resume = models.BooleanField()
     phone = models.CharField(max_length=14)
+    resume = models.FileField(upload_to='uploads/', null=True)
 
     def __str__(self):
         return str(self.user.get_full_name()) + ' seeker'
@@ -42,7 +43,7 @@ class SeekerSkill(models.Model) :
     Model for a Job Seeker-Skill-level instance. Allows the Job Seeker to have a Skill and level for that skill. 0 is not allowed because then its not a skill. A Job Seeker-Skill pairing must be unique. 
     """
     seeker = models.ForeignKey(to=Seeker, on_delete=models.DO_NOTHING)
-    skill = models.ForeignKey(to=Skill, on_delete=models.PROTECT)
+    skill = models.ForeignKey(to=Skill, on_delete=models.DO_NOTHING)
     level = models.CharField(max_length=1, choices=SKILL_LEVEL)
 
     def __str__(self):
@@ -69,14 +70,14 @@ class ContractLength(models.Model) :
     contract_length = models.IntegerField(null=True, blank=True)
 
     def __str__(self) :
-        return str(self.contract_length)
+        return str(self.contract_length) + ' months'
 
 
 class Listing(models.Model) :
     """
     Model for a Listing. Created by a Recruiter, affliated with an Organization. Allows Seekers to apply for employment at an Organization.
     """
-    posted_by = models.ForeignKey(to=Recruiter, on_delete=models.CASCADE)
+    posted_by = models.ForeignKey(to=Recruiter, on_delete=models.DO_NOTHING)
     listing_job_title = models.CharField(max_length=50)
     job_description = models.TextField()
     location = models.CharField(max_length=50)
@@ -92,9 +93,10 @@ class Listing(models.Model) :
 
 class ListingSkill(models.Model) :
     """
+    Model for a ListingSkill. Allows a recruiter to supply skills that are required or recommended for the posting.
     """
-    listing = models.ForeignKey(to=Listing, on_delete=models.CASCADE)
-    skill = models.ForeignKey(to=Skill, on_delete=models.CASCADE)
+    listing = models.ForeignKey(to=Listing, on_delete=models.DO_NOTHING)
+    skill = models.ForeignKey(to=Skill, on_delete=models.DO_NOTHING)
     level = models.CharField(max_length=1, choices=SKILL_LEVEL)
     is_required = models.BooleanField()
 

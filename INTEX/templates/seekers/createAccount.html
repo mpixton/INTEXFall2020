@@ -15,7 +15,7 @@
 
 {% block firstSection %}
 
-    <form action= "{% url 'Seekers:CreateAccount' AccountType=AccType%}" method='POST' style="border:1px solid #ccc">
+    <form enctype="multipart/form-data" action= "{% url 'Seekers:CreateAccount' AccountType=AccType%}" method='POST' style="border:1px solid #ccc">
         <div class="container">
         <h4>Please fill in this form to create an account.</h4>
         <hr>

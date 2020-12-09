@@ -1,8 +1,8 @@
 SKILL_LEVEL = [
-    (1, 'Beginner'),
-    (2, 'Intermediate'),
-    (3, 'Advanced'),
-    (4, 'Expert'),
+    ('1', 'Beginner'),
+    ('2', 'Intermediate'),
+    ('3', 'Advanced'),
+    ('4', 'Expert'),
 ]
 
 ACCOUNT_TYPE = [
