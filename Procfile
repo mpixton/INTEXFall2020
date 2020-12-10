@@ -1,0 +1,1 @@
+web: gunicorn mocs-intex.wsgi
