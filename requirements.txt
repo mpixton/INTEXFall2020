@@ -46,7 +46,7 @@ pyzmq==20.0.0
 six==1.15.0
 # sklearn==0.0
 sqlparse==0.4.1
-statsmodels==0.12.1
+# statsmodels==0.12.1
 threadpoolctl==2.1.0
 toml==0.10.1
 tornado==6.1
