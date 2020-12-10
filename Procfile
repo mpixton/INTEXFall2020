@@ -1,1 +1,1 @@
-web: gunicorn mocs-intex.wsgi
+web: gunicorn INTEX.wsgi
