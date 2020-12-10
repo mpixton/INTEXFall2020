@@ -1,14 +1,19 @@
 from django.shortcuts import render, redirect
 
+#To do:
+#- allow a seeker to edit their skills
+#- when a seeker tries to add the same skill it throughs an http error 
+
+
 # Create your views here.
 #pylint:disable=no-member
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User, Group
 from django.forms import ValidationError
 from django.urls import reverse
-from seekers.forms import SeekerSignUpFrom, RecruiterSignUpForm, OrganizationSignUpForm, AddSkillsForm, LoginForm, applyForm
+from seekers.forms import SeekerSignUpForm, RecruiterSignUpForm, AddSkillsForm, LoginForm, applyForm
 from seekers.models import Listing, Seeker, SeekerSkill, Skill, Application
 from recruiters.models import Recruiter
 from django.contrib import messages
@@ -89,6 +94,7 @@ def jobListingsView(request) :
     return render (request, 'seekers/jobListings.html', context)
 
 
+@login_required(login_url='/login')
 def profileView(request, Type, userID) :
     """
     Allows the user to view their own profile information \n
@@ -123,6 +129,8 @@ def profileView(request, Type, userID) :
         return HttpResponse("Not found")
     
 
+@login_required(login_url='/login')
+@permission_required('seekers.is_seeker', raise_exception=True)
 def applicationView(request, ListingID) :
     """
     Handles serving a blank application for Seeker review (GET method) or creates an application object (POST method) associated with the Seeker \n
@@ -166,8 +174,13 @@ def applicationView(request, ListingID) :
                 }
                 # renders the page with the error message
                 return render (request, 'seekers/jobListings.html', context)
-            # if object is created successfully, render the job listings page
-            return redirect(reverse('Seekers:JobListings'))
+            # if object is created successfully, render the job listings page with a success message
+            context = {
+                'success': Application.objects.get(seeker=seeker, listing=listing),
+                'listings': Listing.objects.all(),
+            }
+            # renders the page with the error message
+            return render (request, 'seekers/jobListings.html', context)
         
         else:
             return HttpResponse('Form not valid to create and application')
@@ -184,91 +197,121 @@ def CreateAccountView(request, AccountType) :
     Account Types: S -> Seeker, O -> Organization, R -> Recruiter \n
     If passed a parameter that doesn't match, returns a 404 error. \n
     """
+    # check the method used in the request
+    # if get, return a blank form depending on the type of user they want to create
+    if  request.method == 'GET' :
+        if AccountType == 'S' :
+            form = SeekerSignUpForm()
+        elif AccountType == 'R' :
+            form = RecruiterSignUpForm()
+        else :
+            return HttpResponse('not a valid account type')
+        # render the create account page
+        return render(request, 'seekers/createAccount.html', {'form': form, 'AccType': AccountType})
     # checks if POST or GET, if not, 404
-    if request.method == 'POST':
+    elif request.method == 'POST':
         # check if valid account type else 4040
         # if valid account type, puts the data in the proper form
         if AccountType == 'S' :
-            form = SeekerSignUpFrom(request.POST, request.FILES['resume'])
+            # form = SeekerSignUpForm(request.POST, request.FILES['resume'])
+            form = SeekerSignUpForm(request.POST)
         elif AccountType == 'R' :
             form = RecruiterSignUpForm(request.POST)
         else :
             return HttpResponse('didn\'t pass the account type check')
-        
-        print(form)
-        print(request.FILES['resume'])
+        # error handling in case something goes wrong
+        # print(form)
+        # print(request.user)
+        # print(form.data)
+        # print(request.POST)
+        # print(form.is_valid())
+        # print(form.data['phone'])
         # validates the form else 404
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             email = form.cleaned_data.get('email')
+            try :
+                # creates an account depending on the account type
+                if AccountType == 'S' :
+                    first_name = form.cleaned_data.get('first_name')
+                    last_name = form.cleaned_data.get('last_name')
+                    phone = form.cleaned_data.get('phone')
+                    # resume = form.cleaned_data.get('resume')
+                    # skill = form.cleaned_data.get('skill')
+                    newUser = User.objects.create_user(username=username, password=password, email=email)
+                    newUser.first_name = first_name
+                    newUser.last_name = last_name
+                    newUser.save()
+                    # person = Seeker.objects.create(user=newUser, phone=phone, resume=resume, has_resume=True)
+                    person = Seeker.objects.create(user=newUser, phone=phone, has_resume=False)
+                    my_group = Group.objects.get(name='Seekers')
+                    my_group.user_set.add(newUser)
 
-            # creates an account depending on the account type
-            if AccountType == 'S' :
-                first_name = form.cleaned_data.get('first_name')
-                last_name = form.cleaned_data.get('last_name')
-                phone = form.cleaned_data.get('phone')
-                resume = form.cleaned_data.get('resume')
-                # skill = form.cleaned_data.get('skill')
-                newUser = User.objects.create_user(username=username, password=password, email=email)
-                newUser.first_name = first_name
-                newUser.last_name = last_name
-                newUser.save()
-                person = Seeker.objects.create(user=newUser, phone=phone, resume=resume, has_resume=True)
-                my_group = Group.objects.get(name='Seekers')
-                my_group.user_set.add(newUser)
+                elif AccountType == 'R':
+                    first_name = form.cleaned_data.get('first_name')
+                    last_name = form.cleaned_data.get('last_name')
+                    job_title = form.cleaned_data.get('employee_job_title')
+                    org = form.cleaned_data.get('org_name')
+                    newUser =  User.objects.create_user(username=username, password=password, email=email)
+                    newUser.first_name = first_name
+                    newUser.last_name = last_name
+                    newUser.save()
+                    person = Recruiter.objects.create(user=newUser, emp_job_title=job_title, org=org)
+                    my_group = Group.objects.get(name='Recruiters')
+                    my_group.user_set.add(newUser)
+                
+                # should be unreachable
+                else :
+                    return HttpResponse('didn\'t pass the account type creation check')
 
-            elif AccountType == 'R':
-                print(form)
-                print(form.cleaned_data.get('first_name'))
-                print(form.cleaned_data.get('last_name'))
-                print(form.cleaned_data.get('username'))
-                print(form.cleaned_data.get('password'))
-                print(form.cleaned_data.get('employee_job_title'))
-                print(form.cleaned_data.get('org_name'))
-                first_name = form.cleaned_data.get('first_name')
-                last_name = form.cleaned_data.get('last_name')
-                job_title = form.cleaned_data.get('employee_job_title')
-                org = form.cleaned_data.get('org_name')
-                newUser =  User.objects.create_user(username=username, password=password, email=email)
-                newUser.first_name = first_name
-                newUser.last_name = last_name
-                newUser.save()
-                print(newUser)
-                person = Recruiter.objects.create(user=newUser, emp_job_title=job_title, org=org)
-                print(person)
-                my_group = Group.objects.get(name='Recruiters')
-                print(my_group)
-                my_group.user_set.add(newUser)
-            
-            # should be unreachable
-            else :
-                return HttpResponse('didn\'t pass the account type creation check')
-
-            authUser = authenticate(username=username, password=password)
-            
-            # require the returned user to have actually been created
-            # log in the user, else 404
-            # 404 should be unreachable
-            if authUser is not None :
-                login(request=request, user=authUser)
-                return redirect(reverse('Seekers:Profile', kwargs={'userID': person.pk, 'Type': ACCOUNT_TYPES.get(AccountType)}))
-            else:
-                return HttpResponse('not a valid user')
-
-    # if get, return a blank form depending on the type of user they want to create
-    # if not a valid type, 404
-    elif request.method == 'GET' :
-        if AccountType == 'S' :
-            form = SeekerSignUpFrom()
-        elif AccountType == 'R' :
-            form = RecruiterSignUpForm()
+                authUser = authenticate(username=username, password=password)
+                
+                # require the returned user to have actually been created
+                # log in the user, else 404
+                # 404 should be unreachable
+                if authUser is not None :
+                    login(request=request, user=authUser)
+                    return redirect(reverse('Seekers:Profile', kwargs={'userID': person.pk, 'Type': ACCOUNT_TYPES.get(AccountType)}))
+                else:
+                    return HttpResponse('not a valid user')
+            # if the user has already been created, but an error was raised, send them to the login page.
+            except IntegrityError :
+                context = {
+                    'form': LoginForm(),
+                    'messages': 'Your account has been created already. Please log in to continue.',
+                }
+                return render(request, 'seekers/login.html', context=context)
+        # if form is not valid
         else :
-            return HttpResponse('not a valid account type')
-
-        return render(request, 'seekers/createAccount.html', {'form': form, 'AccType': AccountType})
+            # repopulate the form with the data that they submitted
+            if AccountType == 'S' :
+                initialData = {
+                    'email': request.POST['email'],
+                    'username': request.POST['username'],
+                    'first_name': request.POST['first_name'],
+                    'last_name': request.POST['last_name'],
+                    'phone': request.POST['phone'],
+                }
+                form = SeekerSignUpForm(initial=initialData)
+            # repopulate the form with the data that they submitted
+            elif AccountType == 'R' :
+                initialData = {
+                    'email': request.POST['email'],
+                    'username': request.POST['username'],
+                    'first_name': request.POST['first_name'],
+                    'last_name': request.POST['last_name'],
+                    'employee_job_title': request.POST['employee_job_title'],
+                    'org_name': request.POST['org_name'],
+                }
+                form = RecruiterSignUpForm(initial=initialData)
+            else :
+                return HttpResponse('not a valid account type')
+            
+            # return HttpResponse('i am an invalid form on the create account view')
+            return render(request, 'seekers/createAccount.html', context={'form': form, 'AccType': AccountType,})
     else :
-        return HttpResponse('Not a valid method')
+        return HttpResponse('I am not a valid method on the create account view')
 
 def loginView(request) :
     """
@@ -321,35 +364,142 @@ def logoutView(request) :
     messages.info(request, "Logged out successfully!")
     return redirect("Seekers:Index")
 
-def addSkillsView(request) :
+
+@login_required(login_url='login/')
+@permission_required('seekers.is_seeker', raise_exception=True)
+def AddSeekerSkillsView(request) :
     """
     If called by GET, returns a blank form for a job seeker to fill out. If called via a POST, adds a skills to job seeker. \n
-    Take no GET parameters.
+    Take no GET parameters. \n
+    If GET, returns blank form. 
+    If POST, adds the selected skill to the Seeker, \n
     """
     # check the method of the action
+    # if GET, render a blank form to fill out
+    if request.method == 'GET' :
+        # instantiate blank form
+        form = AddSkillsForm()
+        # return the blank 
+        return render(request = request, template_name = "seekers/addSkills.html", context={"form":form})
     # if POST, process the filled out form
-    if request.method == 'POST' :
+    elif request.method == 'POST' :
+        # fill out the form
         form = AddSkillsForm(request.POST)
+        # if form is valid, post the form 
         if form.is_valid() :
             skill = form.cleaned_data.get('skill')
             level = form.cleaned_data.get('level')
             seeker = Seeker.objects.get(user=request.user)
-            SeekerSkill.objects.create(seeker=seeker, skill=skill, level=level)
+            # check for validation errors.
+            # if error raised, send them back to the form with the error message
+            try :
+                SeekerSkill.objects.create(seeker=seeker, skill=skill, level=level)
+            except IntegrityError as e:
+                form.add_error(field='skill', error='You already have this skill!')
+                return render(request, 'seekers/addSkills.html', context={'form': form,})
+            # render the profile if successful
             return redirect(reverse('Seekers:Profile', kwargs={'Type': 'seeker', 'userID': seeker.pk}))
+        # form is not valid
         else :
-            return Http404()
-    # if GET, render a blank form to fill out
-    elif request.method == 'GET' :
-        # instantiate blank form
-        form = AddSkillsForm()
-        # return the blank 
-        return render(request = request,
-                template_name = "seekers/addSkills.html",
-                context={"form":form})
+            return render(request, 'seekers/addSkills.html', context={'form': form,})
+    # if invalid method, 
     else :
-        return Http404()
+        return HttpResponse('i am an invalid method on the add skills view')
 
 
+@login_required(login_url='login/')
+@permission_required('seekers.is_seeker', raise_exception=True)
+def EditSeekerSkillsView(request, SeekerSkillID) :
+    """
+    Allows a Seeker to edit their skills. \n
+    GET parameters: SeekerSkillID -> pk of the SeekerSkill to edit \n
+    If GET method used, renders the Skill to edit \n
+    If POST method used, saves the changes \n
+    """
+    # checks the method used
+    # if GET, renders blank form
+    if request.method == 'GET' :
+        # get the skill to edit
+        editSkill = SeekerSkill.objects.get(pk=SeekerSkillID)
+        # populate the inital data dict
+        intitialData = {
+            'skill': editSkill.skill, 
+            'level': editSkill.level,
+        }
+        # sets the context
+        context = {
+            'form': AddSkillsForm(initial=intitialData),
+        }
+        # render the add skills page
+        return render(request, 'seekers/addSkills.html', context=context)
+    # if POST, save the data and redirect to profile
+    elif request.method == 'POST' :
+        # puts the data in the form to validate it
+        form = AddSkillsForm(request.POST)
+        # check if form is valid
+        # if valid, continue with update
+        if form.is_valid() :
+            #gets the skill to edit
+            editSkill = SeekerSkill.objects.get(pk=SeekerSkillID)
+            editSkill.skill = form.cleaned_data.get('skill')
+            editSkill.level = form.cleaned_data.get('level')
+            # check for validation errors.
+            # if error raised, send them back to the form with the error message
+            try :
+                editSkill.save()
+            except ValidationError :
+                # if error raised, send them back to the form with the error message
+                return render(request, 'recruiters/addSkills.html', context={'form': form,})
+            # return to the profile page
+            return redirect(reverse('Seekers:Profile', kwargs={'Type': 'seeker', 'userID': request.user.pk}))
+        #if invalid, abort
+        else :
+            return HttpResponse('i am an invalid form on the edit seeker skills view')
+    # invalid method
+    else :
+        return HttpResponse('i am a wrong method on the edit skills view')
+
+
+@login_required(login_url='login/')
+@permission_required('seekers.is_seeker', raise_exception=True)
+def DeleteSeekerSkillsView(request, SeekerSkillID) :
+    """
+    Allows a Seeker to delete their skills. \n
+    GET parameters: SeekerSkillID -> pk of the SeekerSkill to delete \n
+    If GET, renders the Skill to delete for review\n
+    If POST, deletes the Skill \n
+    """
+    # checks the request method
+    # if GET, renders the form with data populated
+    if request.method == 'GET' :
+        # gets the SeekerSkill
+        deleteSkill = SeekerSkill.objects.get(pk=SeekerSkillID)
+        # populates the initial data dict
+        intialData = {
+            'skill': deleteSkill.skill, 
+            'level': deleteSkill.level,
+        }
+        # sets the context variable
+        context = {
+            'form': AddSkillsForm(intialData),
+        }
+        # render the template
+        return render(request, 'seekers/addSkills.html', context=context)
+    # if POST, delete the listing and reroute to profile view
+    elif request.method == 'POST' :
+        # gets the SeekerSkill to delete
+        deleteSkill = SeekerSkill.objects.get(pk=SeekerSkillID)
+        # deletes the SeekerSkill
+        deleteSkill.delete()
+        # redirects to the profile to confirm delete
+        return redirect(reverse('Seekers:Profile', kwargs={'Type': 'seeker', 'userID': request.user.pk,}))
+    # else, display wrong method
+    else :
+        return HttpResponse('wrong method')
+
+
+@login_required(login_url='login/')
+@permission_required('seekers.is_seeker', raise_exception=True)
 def userApplicationsView(request) :
     print(request.user.is_authenticated)
     seeker = Seeker.objects.get(user=request.user)
@@ -366,7 +516,7 @@ def recommenderDisplayView(request) :
         "Inputs": {
             "input1": {
                 "ColumnNames": ["user_id", "job_title"],
-                "Values": [["72", "Forecast Systems Manager"]]
+                "Values": [["72", "Marketing Consultant"]]
             }
         },
         "GlobalParameters": {}

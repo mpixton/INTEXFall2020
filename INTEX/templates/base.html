@@ -43,7 +43,7 @@
       <div>
         <a class="btn btn-primary" href="{% url 'Seekers:Index' %}">Home</a>
         <a class="btn btn-primary" href="{% url 'Seekers:JobListings' %}">Jobs</a>
-        <a class="btn btn-primary" href="{% url 'Seekers:TrendingJobs' %}">Trending</a>
+        <a class="btn btn-primary" href="{% url 'Seekers:TrendingJobs' %}">Job Seeker+</a>
 
         {% if perms.recruiters.is_recruiter %}
           <a class="btn btn-primary" href="{% url 'Recruiters:CreateJob' %}">Post a Job</a>
@@ -69,8 +69,8 @@
 
   <!-- Masthead --> 
 {% block header %}
-<header class="masthead text-white text-center">
-    <!-- <header class="masthead text-white text-center" style="background:url('img/bg-masthead.jpg') no-repeat center center;"></header> -->
+  <header class="masthead text-white text-center">
+  <!-- <header class="masthead text-white text-center" style="background:url('img/bg-masthead.jpg') no-repeat center center;"></header> -->
     <div class="overlay"></div>
     <div class="container">
       <div class="row">
@@ -103,19 +103,19 @@
         <div class="col-lg-4">
           <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
             <h3>Looking for a Job?</h3>
-            <p class="lead mb-0">Our website is guaranteed to match you with your best employer. We know job searching is hard, that's why we are here to help.</p>
+            <p class="lead mb-0">Our website is guaranteed to provide you with your best employment opportunity. We know job searching is hard, that's why we are here to help.</p>
           </div>
         </div>
         <div class="col-lg-4">
           <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
             <h3>Need to Post a Job?</h3>
-            <p class="lead mb-0">Recruiters look no further. Black Cyber Recruiter is the best website on the internet for hiring minorities.</p>
+            <p class="lead mb-0">Recruiters look no further. Black Cyber Recruiter is the best website on the internet for hiring minorities. Sign up today!</p>
           </div>
         </div>
         <div class="col-lg-4">
           <div class="features-icons-item mx-auto mb-0 mb-lg-3">
             <h3>New to the Job Market?</h3>
-            <p class="lead mb-0">Black Cyber Recruiter has all the latest trending job research. Check it out today!</p>
+            <p class="lead mb-0">Black Cyber Recruiter's Job Seeker+ is almost here. Check it out today to see what your future can look like!</p>
           </div>
         </div>
       </div>

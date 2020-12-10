@@ -3,7 +3,7 @@
 {% load seekers_extras %}
 
 {% block nameOfTab %}
-<title>Post a Job</title>
+<title>Post a Job</title> 
 {% endblock %}
 
 
@@ -25,6 +25,7 @@
             {% for field in form %}
                 {{ field.label_tag}}
                 {{ field }}
+                {{ field.errors }}
                 <br>
             {% endfor %}
 

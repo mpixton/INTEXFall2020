@@ -16,15 +16,15 @@ class Seeker(models.Model) :
     """
     user = models.OneToOneField(to=User, on_delete=models.CASCADE)
     has_resume = models.BooleanField()
-    phone = models.CharField(max_length=14)
-    resume = models.FileField(upload_to='uploads/', null=True)
+    phone = models.CharField(max_length=15)
+    # resume = models.FileField(upload_to='uploads/', null=True)
 
     def __str__(self):
         return str(self.user.get_full_name()) + ' seeker'
 
     class Meta :
         permissions = [
-            ('is_seeker', 'Is a job seeker user')
+            ('is_seeker', 'Is a Job Seeker')
         ]
 
 
@@ -67,7 +67,7 @@ class ContractLength(models.Model) :
     """
     Model for Contract Lengths. 
     """
-    contract_length = models.IntegerField(null=True, blank=True)
+    contract_length = models.CharField(max_length=10, unique=True)
 
     def __str__(self) :
         return str(self.contract_length) + ' months'
@@ -83,6 +83,9 @@ class Listing(models.Model) :
     location = models.CharField(max_length=50)
     contract_type = models.ForeignKey(to=ContractType, on_delete=models.DO_NOTHING, null=True)
     contract_length = models.ForeignKey(to=ContractLength, on_delete=models.DO_NOTHING, null=True)
+    salary_upper = models.DecimalField(max_digits=8, decimal_places=2)
+    salary_lower = models.DecimalField(max_digits=8, decimal_places=2)
+    relocation_assistance = models.BooleanField(verbose_name='Relocation Assistance Available?', null=True)
 
     def __str__(self):
         return str(self.posted_by.org) + ' ' + str(self.listing_job_title)
@@ -102,6 +105,9 @@ class ListingSkill(models.Model) :
 
     def __str__(self) :
         return str(self.listing) + ' ' + str(self.skill) + ' ' + self.level
+
+    class Meta: 
+        unique_together = ('skill', 'listing')
         
 
 class Application(models.Model) :
@@ -133,11 +139,8 @@ class JobOffer(models.Model) :
     extended_by = models.ForeignKey(to=Recruiter, on_delete=models.DO_NOTHING)
     extended_to = models.OneToOneField(to=Application, on_delete=models.DO_NOTHING)
     offer_job_title = models.CharField(max_length=50)
-    contract = models.CharField(max_length=30)
     is_accepted = models.BooleanField()
-    salary_upper = models.DecimalField(max_digits=8, decimal_places=2)
-    salary_lower = models.DecimalField(max_digits=8, decimal_places=2)
-
+    
     def __str__(self):
         return str(self.person) + ' ' + str(self.offerJobTitle)
 

@@ -1,5 +1,6 @@
 from django.urls import path
 import recruiters.views as v
+from seekers.views import loginView
 
 app_name = 'Recruiters'
 urlpatterns = [
@@ -11,5 +12,6 @@ urlpatterns = [
     path('listing/editSkill/<str:ListingSkillID>', v.EditListingSkillView, name='EditListingSkill'),
     path('listing/deleteSkill/<str:ListingSkillID>', v.DeleteListingSkillView, name='DeleteListingSkill'),
     path("listing/applicants", v.applicantsView, name="Applicants"),
+    path('listing/login/', loginView, name='Login'),
     path("", v.indexView, name="Index"),
 ]   

@@ -7,6 +7,9 @@ from recruiters.models import Recruiter, User
 from seekers.models import Listing, Skill, ListingSkill, ContractLength, ContractType
 from recruiters.forms import PostJobForm, AddListingSkillForm
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required, permission_required
+from django.forms import ValidationError
+from django.db import IntegrityError
 
 def indexView(request) :
     """
@@ -16,7 +19,7 @@ def indexView(request) :
 
     return HttpResponse('Welcome!')
 
-
+@login_required()
 def applicantsView(request) :
     """
     Shows a Recruiter Job Seekers that have applied to Listings posted by the logged in Recruiter. \n
@@ -31,7 +34,8 @@ def applicantsView(request) :
     }
     return render(request, 'recruiters/applicants.html', context=context)
 
-
+@login_required()
+@permission_required('recruiters.is_recruiter', raise_exception=True)
 def createJobPostingView(request) :
     """
     Allows a Recruiter to create a new job listing. \n
@@ -48,25 +52,33 @@ def createJobPostingView(request) :
         return render(request, 'recruiters/postJob.html', context=context)
     # if POST, create the listing and send the recruiter to the profile page
     elif request.method == 'POST' :
+        # put the data into the form to check for validation
         form = PostJobForm(request.POST)
+        # if no validation errors raised, allow to progress
+        if form.is_valid() :
+            # assign variables
+            job_title = form.cleaned_data.get('job_title')
+            job_description = form.cleaned_data.get('job_description')
+            location = form.cleaned_data.get('location')
+            contract_length = form.cleaned_data.get('contract_length')
+            contract_type = form.cleaned_data.get('contract_type')
+            poster = Recruiter.objects.get(user=request.user)
+            salary_upper = form.cleaned_data.get('salary_upper')
+            salary_lower = form.cleaned_data.get('salary_lower')
+            reloc = form.cleaned_data.get('reloc')
+            # create the listing
+            Listing.objects.create(listing_job_title=job_title, job_description=job_description, location=location, contract_length=contract_length, contract_type=contract_type, posted_by=poster, salary_lower=salary_lower, salary_upper=salary_upper, relocation_assistance=reloc)
+            # render the profile page
+            return redirect(reverse('Seekers:Profile', kwargs={'Type': 'recruiter', 'userID': request.user.pk}))
+        else :
+            return render(request, 'recruiters/postJob.html', context={'form': form})
+    # invalid method 
     else :
-        return HttpResponse('Error')
+        return HttpResponse('i am an invalid method on the post job view')
+    
 
-    if form.is_valid() :
-        job_title = form.cleaned_data.get('job_title')
-        job_description = form.cleaned_data.get('job_description')
-        location = form.cleaned_data.get('location')
-        contract_length = form.cleaned_data.get('contract_length')
-        contract_type = form.cleaned_data.get('contract_type')
-        poster = Recruiter.objects.get(user=request.user)
-
-        Listing.objects.create(listing_job_title=job_title, job_description=job_description, location=location, contract_length=contract_length, contract_type=contract_type, posted_by=poster)
-    else :
-        return HttpResponse('Not a valid user')
-    # unreachable
-    return redirect(reverse('Seekers:Profile', kwargs={'Type': 'recruiter', 'userID': request.user.pk}))
-
-
+@login_required()
+@permission_required('recruiters.is_recruiter', raise_exception=True)
 def EditListingView(request, ListingID):
     """
     Allows a Recruiter to edit a listing previously posted \n
@@ -86,6 +98,9 @@ def EditListingView(request, ListingID):
             'location': listing.location,
             'contract_length': listing.contract_length,
             'contract_type': listing.contract_type,
+            'salary_upper': listing.salary_upper,
+            'salary_lower': listing.salary_lower,
+            'reloc': listing.relocation_assistance,
         }
         # creates the context
         context = {
@@ -97,21 +112,33 @@ def EditListingView(request, ListingID):
         return render(request, 'recruiters/postJob.html', context=context)
     # if POST, save the data and redirect to profile
     elif request.method == 'POST' :
-        # pulls the object to update
-        updateListing = Listing.objects.get(pk=ListingID)
-        updateListing.job_title = request.POST.get('job_title')
-        updateListing.job_description = request.POST.get('job_description')
-        updateListing.location = request.POST.get('location')
-        updateListing.contract_length = ContractLength.objects.get(pk=request.POST.get('contract_length'))
-        updateListing.contract_type = ContractType.objects.get(pk=request.POST.get('contract_type'))
-        updateListing.save()
-        # redirect to the profile page
-        return redirect(reverse('Seekers:Profile', kwargs={'Type': 'recruiter', 'userID': request.user.pk}))
+        # puts the post data in a form to check if the data is valid
+        form = PostJobForm(request.POST) 
+        # if valid, proceed with update
+        if form.is_valid() :
+            # pulls the object to update
+            updateListing = Listing.objects.get(pk=ListingID)
+            # updats the listing
+            updateListing.job_title = form.cleaned_data.get('job_title')
+            updateListing.job_description = form.cleaned_data.get('job_description')
+            updateListing.location = form.cleaned_data.get('location')
+            updateListing.contract_length = form.cleaned_data.get('contract_length')
+            updateListing.contract_type = form.cleaned_data.get('contract_type')
+            updateListing.salary_lower = form.cleaned_data.get('salary_lower')
+            updateListing.salary_upper = form.cleaned_data.get('salary_upper')
+            updateListing.relocation_assistance = form.cleaned_data.get('reloc')
+            updateListing.save()
+            # redirect to the profile page
+            return redirect(reverse('Seekers:Profile', kwargs={'Type': 'recruiter', 'userID': request.user.pk}))
+        # if invalid, display so
+        else :
+            return render(request, 'recruiters/postJob.html', context={'form': form,})
     # else, display wrong method
     else :
-        return HttpResponse('wrong method')
+        return HttpResponse('i am an invalid method on the edit listing view')
 
-
+@login_required()
+@permission_required('recruiters.is_recruiter', raise_exception=True)
 def DeleteListingView(request, ListingID) :
     """
     Allows a Recruiter to delete a listing previously posted \n
@@ -131,6 +158,9 @@ def DeleteListingView(request, ListingID) :
             'location': listing.location,
             'contract_length': listing.contract_length,
             'contract_type': listing.contract_type,
+            'salary_upper': listing.salary_upper,
+            'salary_lower': listing.salary_lower,
+            'reloc': listing.relocation_assistance,
         }
 
         context = {
@@ -151,7 +181,8 @@ def DeleteListingView(request, ListingID) :
     else :
         return HttpResponse('wrong method')
 
-
+@login_required()
+@permission_required('recruiters.is_recruiter', raise_exception=True)
 def AddListingSkill(request, ListingID) :
     """
     Adds a Skill to a Listing. \n
@@ -171,12 +202,23 @@ def AddListingSkill(request, ListingID) :
     elif request.method == 'POST' :
         # put all data in the form
         form = AddListingSkillForm(request.POST) 
+        # check for validation errors.
+        # if error raised, send them back to the form with the error message
+        try :
+            form.is_valid()
+        except ValidationError :
+            return render(request, 'recruiters/addSkill.html', context={'form': form,})
         # check if form is valid
         if form.is_valid() :
             skill = form.cleaned_data.get('skill')
             level = form.cleaned_data.get('level')
             is_required = form.cleaned_data.get('is_required')
-            ListingSkill.objects.create(skill=skill, level=level, listing=Listing.objects.get(pk=ListingID), is_required=is_required)
+            # check if the skill-listing pairing already exists.
+            try :
+                ListingSkill.objects.create(skill=skill, level=level, listing=Listing.objects.get(pk=ListingID), is_required=is_required)
+            except IntegrityError :
+                form.add_error(field='skill', error='This skill is already associated with this listing!')
+                return render(request, 'recruiters/addSkill.html', context={'form': form, 'Listing': ListingID,})
             # redirect the user to the Listing to see the skills
             return redirect(reverse('Recruiters:EditListing', kwargs={'ListingID': ListingID}))
         # if not valid, tell the user
@@ -185,7 +227,8 @@ def AddListingSkill(request, ListingID) :
     else :
         return HttpResponse('I am a wrong method on the add listing skills')
 
-
+@login_required()
+@permission_required('recruiters.is_recruiter', raise_exception=True)
 def EditListingSkillView(request, ListingSkillID) :
     """
     Allows a Recruiter to edit the ListingSkills associated with their listing \n
@@ -216,6 +259,12 @@ def EditListingSkillView(request, ListingSkillID) :
     elif request.method == 'POST' :
         form = AddListingSkillForm(request.POST)
         # checks if new data is valid
+        # check for validation errors.
+        # if error raised, send them back to the form with the error message
+        try :
+            form.is_valid()
+        except ValidationError :
+            return render(request, 'recruiters/addSkill.html', context={'form': form,})
         if form.is_valid() :
             # gets the ListingSkill instance
             updateLS = ListingSkill.objects.get(pk=ListingSkillID)
@@ -231,7 +280,8 @@ def EditListingSkillView(request, ListingSkillID) :
     else :
         return HttpResponse('I am a wrong method on the edit listing skills call')
 
-
+@login_required()
+@permission_required('recruiters.is_recruiter', raise_exception=True)
 def DeleteListingSkillView(request, ListingSkillID) :
     """
     Allows a user to delete the Skill associated with the Listing. \n

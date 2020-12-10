@@ -13,23 +13,33 @@
 
 {% block firstSection %}
 
-    <form action= "{% url 'Seekers:AddSkills' %}" method='POST' style="border:1px solid #ccc">
+    <form action= "{{ request.path }}" method='POST' style="border:1px solid #ccc">
         <div class="container">
         <h4>Please select your skill and skill level.</h4>
         <br>
         
         {% csrf_token %}
 
+        {{ form.non_field_errors }}
+
         {{ form.skill.label_tag }}
         {{ form.skill }}
+        {{ form.skill.errors }}
         <br>
         {{ form.level.label_tag }}
         {{ form.level }}
     
             <div class="clearfix">
-                <button type="submit" class="btn btn-primary">Add Skill</button>
-                <button type="button" class="btn btn-primary">Cancel</button>
-                <br>
+                {% if 'add_skill' in request.path %}
+                <button type="submit" class="btn btn-primary" name="postJob">Add Skill</button>
+                {% endif %}
+                {% if 'editSkill' in request.path %}
+                <button type="submit" class="btn btn-primary" name="saveChanges">Save Changes </button>
+                {% endif %}
+                {% if 'deleteSkill' in request.path %}
+                <button type="submit" class="btn btn-primary" name="deleteJob">Delete Skill</button>
+                {% endif %}
+                <a href="{% url 'Seekers:Profile' Type='seeker' userID=request.user.pk %}"><button type="button" class="btn btn-primary">Cancel</button></a>
             </div>
         </div>
     </form>

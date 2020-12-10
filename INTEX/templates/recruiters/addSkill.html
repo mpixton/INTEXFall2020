@@ -24,6 +24,7 @@
         {% for field in form %}
             {{ field.label_tag}}
             {{ field }}
+            {{ field.errors }}
             <br>
         {% endfor %}
 
@@ -33,7 +34,7 @@
                 <p>{{skill.skill.skill_name|title}} - Skill Level: {{skill.level|returnRating}} -  {% if skill.is_required %}Required{% else %}Preferred{% endif %}</p>
             {% endfor %}
         {% else %}
-        <h6>There are no other skill associated with the listing {{Listing}} </h6>
+        <h6>There are no other skills associated with this listing!</h6>
         {% endif %}
 
         <div class="clearfix">
@@ -46,7 +47,7 @@
             {% if 'deleteSkill' in request.path %}
             <button type="submit" class="btn btn-primary" name="deleteJob">Delete Listing</button>
             {% endif %}
-            <a href="{% url 'Recruiters:EditListing' ListingID=Listing.pk %}"><button type="button" class="btn btn-primary">Cancel</button></a>
+            <a href="{% url 'Recruiters:EditListing' ListingID=Listing %}"><button type="button" class="btn btn-primary">Cancel</button></a>
         </div>
     </div>
 </form>

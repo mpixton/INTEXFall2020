@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load seekers_extras %}
 
 {% block nameOfTab %}
 <title>Job Listings</title>
@@ -29,7 +30,7 @@
 
 {% block firstSection %}
 <!-- Page Content -->
-
+ 
 <!-- If statement here to check if a related job was found. Do not display div if nothing was found.-->
 <div class="container">
 
@@ -38,23 +39,47 @@
 <h5>{{ errorjob.listing.posted_by.org }}</h5>
 <h5>{{ errorjob.listing.listing_job_title }}</h5>
 <h5>{{ errorjob.date_applied }}</h5>
+{% elif success is not None %}
+<h3>You have successfully applied to "{{success.listing.listing_job_title}}".</h3>
+<h4>Apply to more positions below, or view all your current applications in "Profile"</h4>
 {% endif %}
+
+  <h3>Job Results: {{ listings|length }}</h3>
 
   {% for job in listings %}
     <!-- Project One -->
     <div class="row rowForJobListings" style="border:groove black">
       <div class="col-md-5">
-          <h3>Job Title: {{ job.listing_job_title }}</h3>
-          <h3>Company: {{ job.posted_by.org }}</h3>
-          <h3>Location: {{ job.location }}</h3>
+          <div class='listing-data'> <h3>Job Title:</h3> <div class='listing-data-center'>{{ job.listing_job_title }}</div></div>
+          <div class='listing-data'> <h3>Company:</h3> <div class='listing-data-center'>{{ job.posted_by.org }}</div></div>
+          <div class='listing-data'> <h3>Location:</h3> <div class='listing-data-center'>{{ job.location }}</div></div>
+          <div class='listing-data'> <h5>Salary Range:</h5> <div class='listing-data-center'>{{job.salary_lower}} -- {{ job.salary_upper }}</div></div>
+          <div class='listing-data'> <h5>Relocation Assistance Available:</h5> <div class='listing-data-center'>{{ job.relocation_assistance }}</div></div>
       </div>
       <div class="col-md-7">
         <h3>Summary</h3>
         <p>{{ job.job_description }}</p>
+        <div class='listing-skills'>
+          <h3>Skills</h3>
+          <div class='listing-skill-row'>
+                  <div class='listing-skill-item'><h5>Skill</h5></div> 
+                  <div class='listing-skill-item'><h5>Level of Experience</h5></div> 
+                  <div class='listing-skill-item'></div>
+          </div>
+            {% for skill in job.listingskill_set.all  %}
+                <div class='listing-skill-row'>
+                  <div class='listing-skill-item'>{{ skill.skill|title }}</div> 
+                  <div class='listing-skill-item'>{{ skill.level|returnRating }}</div> 
+                  <div class='listing-skill-item'>{% if skill.is_required %}Required{% else %}Preferred{% endif %}</div>
+                </div>
+              {% empty %}
+                <p>No Skills Listed</p>
+            {% endfor %}
+        </div>
         {% if perms.seekers.is_seeker %}
           <a class="btn btn-primary" href="{% url 'Seekers:Application' ListingID=job.pk %}">Apply</a>
         {% elif perms.recruiters.is_recruiter %}
-          <a class="btn btn-primary" href="#">View Applicants</a>
+          <a class="btn btn-primary" href="{% url 'Recruiters:Applicants' %}">View Applicants</a>
         {% elif user.is_anonymous %}
           <a class="btn btn-primary" href="{% url 'Seekers:Login' %}">Login to Apply!</a>
         {% endif %}
@@ -63,6 +88,7 @@
     <!-- /.row -->
     <hr>
   {% endfor %}
+  <h3><a href='#top'>Back to the Top!</a></h3>
 </div>
 {% endblock %}
 

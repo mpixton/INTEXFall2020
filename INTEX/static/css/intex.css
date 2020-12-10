@@ -10,3 +10,18 @@ div.container-row form{
     padding-left: 1.5rem;
     padding-right: 1.5rem;
 }
+
+ul li.skill-item{
+    display: flex;
+    flex-direction: row;
+    padding-top: 5px;
+    padding-bottom: 10px;
+}
+
+ul li.skill-item div.skill-spacer{
+    flex-grow: 1;
+}
+
+ul li.skill-item div.skill-spacer.push-left{
+    flex-grow: 6;
+}
