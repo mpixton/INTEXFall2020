@@ -11,6 +11,11 @@ ACCOUNT_TYPE = [
     ('O', 'Organization'),
 ]
 
+RELOCATION_ASSISTANCE = [
+    ('1', 'Available'),
+    ('2', 'Unavailable')
+]
+
 CONTRACT = [
     (1, 'Apprenticeship'),
     (2, 'Apprenticeship 12 mois'),

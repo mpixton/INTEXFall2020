@@ -19,26 +19,32 @@
     <h4>Please verify the information is correct.</h4>
     <hr>
     <div class="form-column">
-    {% csrf_token %}
-    {{ form.first_name.label_tag }}
-    {{ form.first_name }}
+        {% csrf_token %}
+        {{ form.first_name.label_tag }}
+        {{ form.first_name }}
 
-    {{ form.last_name.label_tag }}
-    {{ form.last_name }}
+        {{ form.last_name.label_tag }}
+        {{ form.last_name }}
 
-    {{ form.email.label_tag }}
-    {{ form.email }}
-    </div>
-    <h5>Your Skills:</h5>
-    <ul>
-    {% for skill in skills %}
-      <li>{{ skill.skill.skill_name|title }} {{ skill.level|returnRating }}</li>
-    {% endfor %}
-    </ul>
-    <div class="clearfix">
-        <button type="submit" class="btn btn-primary">Apply</button>
-        <a href="{% url 'Seekers:JobListings' %}"><button type="button" class="btn btn-primary">Cancel</button></a>
-    </div>
+        {{ form.email.label_tag }}
+        {{ form.email }}
+        </div>
+        <h5>Your Skills:</h5>
+        <ul>
+        {% for skill in skills %}
+            <li>{{ skill.skill.skill_name|title }} {{ skill.level|returnRating }}</li>
+        {% endfor %}
+        </ul>
+        <h5>Skills for this Listing: </h5>
+        <ul>
+        {% for skill in listingSkills %}
+            <li>{{ skill.skill.skill_name|title }} {{ skill.level|returnRating }}</li>
+        {% endfor %}
+        </ul>
+        <div class="clearfix">
+            <button type="submit" class="btn btn-primary">Apply</button>
+            <a href="{% url 'Seekers:JobListings' %}"><button type="button" class="btn btn-primary">Cancel</button></a>
+        </div>
     </div>
 </form>
 

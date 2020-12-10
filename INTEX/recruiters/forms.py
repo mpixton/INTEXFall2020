@@ -3,7 +3,7 @@
 from django import forms
 from recruiters.choices import SIZE, SECTOR
 from seekers.models import ContractType, ContractLength, ListingSkill, Skill
-from seekers.choices import SKILL_LEVEL
+from seekers.choices import SKILL_LEVEL, RELOCATION_ASSISTANCE
 from django.forms import ValidationError
 
 
@@ -24,7 +24,7 @@ class PostJobForm(forms.Form) :
     contract_length = forms.ModelChoiceField(queryset=ContractLength.objects.all().order_by('contract_length'), label='Contract Term:')
     salary_upper = forms.DecimalField(max_digits=8, label='What is the salary upper limit for this job?', decimal_places=2)
     salary_lower = forms.DecimalField(max_digits=8, label='What is the salary lower limit for this job?', decimal_places=2)
-    reloc = forms.BooleanField(label='Relocation assistance available?', required=True)
+    reloc = forms.CharField(label='Relocation assistance available?', widget=forms.Select(choices=RELOCATION_ASSISTANCE))
 
     def clean_salary_lower(self) :
         sl =  self.cleaned_data.get('salary_lower')
@@ -42,7 +42,7 @@ class AddListingSkillForm(forms.Form) :
     level -> CharChoicesField->SKILL_LEVEL \n
     is_required -> BooleanField \n
     """
-    skill = forms.ModelChoiceField(queryset=Skill.objects.all())
+    skill = forms.ModelChoiceField(queryset=Skill.objects.all().order_by('skill_name'))
     level = forms.CharField(
         max_length=1,
         widget=forms.Select(choices=SKILL_LEVEL)

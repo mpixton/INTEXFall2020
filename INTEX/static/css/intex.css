@@ -1,5 +1,6 @@
 .rowForJobListings {
-    margin:1em
+    margin:1em;
+    padding: 1.5rem;
 }
 
 div.container-row{
@@ -11,17 +12,112 @@ div.container-row form{
     padding-right: 1.5rem;
 }
 
-ul li.skill-item{
+div.seeker-skill-row{
     display: flex;
     flex-direction: row;
     padding-top: 5px;
     padding-bottom: 10px;
 }
 
-ul li.skill-item div.skill-spacer{
+div.seeker-skill-button{
+    flex-basis: 10%;
     flex-grow: 1;
 }
 
-ul li.skill-item div.skill-spacer.push-left{
-    flex-grow: 6;
+div.seeker-skill-skill-description{
+    flex-basis: 25%;
+    flex-grow: 1;
+    font-size: 1.5rem;
+}
+
+div.profile-footer {
+    padding-top: 1.75rem;
+    padding-bottom: 1.25rem;
+}
+
+
+div.listing-data{
+    display: flex;
+    flex-direction: row;
+}
+
+div.listing-data p{
+    font-size: 1.25rem;
+}
+
+div.listing-skill-row{
+    display: flex;
+    flex-direction: row;
+}
+
+div.listing-skill-row div.listing-skill-item{
+    flex-basis: 25%;
+    flex-grow: 1;
+}
+
+div.listing-skills{
+    padding-bottom: 2rem;
+}
+
+div.listing-data-center{
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 1.25rem;
+}
+
+div.profile-listing-row{
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 10px;
+    padding-top: 5px;
+}
+
+div.profile-listing-row.header{
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 10px;
+    padding-top: 20px;
+}
+
+div.profile-listing-description{
+    flex-basis: 15%;
+    flex-grow: 1;
+    font-size: 1.25rem;
+}
+
+div.profile-listing-button{
+    flex-basis: 10%;
+    flex-grow: 1;
+}
+
+div.applications{
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+}
+
+div.application-row{
+    display: flex;
+    flex-direction: row;
+}
+
+div.application-row-item{
+    flex-basis: 15%;
+    flex-grow: 1;
+}
+
+div.application-row.header{
+    padding-left: 1.5rem;
+} 
+
+div.application-row.applicant{
+    padding-left: 1.5rem;
+    font-size: 1.25rem;
+} 
+
+div.applicants-center{
+    display: flex;
+    justify-content: center;
+    padding-top: 3rem;
+    padding-bottom: 2rem;
 }

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load seekers_extras %}
+{% load humanize %}
 
 {% block nameOfTab %}
 <title>Job Listings</title>
@@ -53,8 +54,8 @@
           <div class='listing-data'> <h3>Job Title:</h3> <div class='listing-data-center'>{{ job.listing_job_title }}</div></div>
           <div class='listing-data'> <h3>Company:</h3> <div class='listing-data-center'>{{ job.posted_by.org }}</div></div>
           <div class='listing-data'> <h3>Location:</h3> <div class='listing-data-center'>{{ job.location }}</div></div>
-          <div class='listing-data'> <h5>Salary Range:</h5> <div class='listing-data-center'>{{job.salary_lower}} -- {{ job.salary_upper }}</div></div>
-          <div class='listing-data'> <h5>Relocation Assistance Available:</h5> <div class='listing-data-center'>{{ job.relocation_assistance }}</div></div>
+          <div class='listing-data'> <h5>Salary Range:</h5> <div class='listing-data-center'> ${{ job.salary_upper|intcomma}} -- ${{job.salary_lower|intcomma}}</div></div>
+          <div class='listing-data'> <h5><div class='listing-data-center'>Relocation Assistance {{ job.relocation_assistance|returnReloc }}</div></div>
       </div>
       <div class="col-md-7">
         <h3>Summary</h3>

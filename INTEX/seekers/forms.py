@@ -78,6 +78,12 @@ class SeekerSignUpForm(BaseSignUpForm) :
 
 
 class LoginForm(forms.Form) :
+    """
+    Form to allow a user to login. \n
+    Fields: \n
+    username -> CharField \n
+    password -> CharField(PasswordInput) \n
+    """
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
 

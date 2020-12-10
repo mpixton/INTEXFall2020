@@ -2,7 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from datetime import datetime as DT
 from recruiters.models import Recruiter
-from seekers.choices import SKILL_LEVEL
+from seekers.choices import SKILL_LEVEL, RELOCATION_ASSISTANCE
 from django.contrib.auth.models import User
 
 # Create your models here.
@@ -85,7 +85,7 @@ class Listing(models.Model) :
     contract_length = models.ForeignKey(to=ContractLength, on_delete=models.DO_NOTHING, null=True)
     salary_upper = models.DecimalField(max_digits=8, decimal_places=2)
     salary_lower = models.DecimalField(max_digits=8, decimal_places=2)
-    relocation_assistance = models.BooleanField(verbose_name='Relocation Assistance Available?', null=True)
+    relocation_assistance = models.CharField(max_length=1, verbose_name='Relocation Assistance Available?', choices=RELOCATION_ASSISTANCE)
 
     def __str__(self):
         return str(self.posted_by.org) + ' ' + str(self.listing_job_title)
@@ -115,7 +115,7 @@ class Application(models.Model) :
     Model for an Application. Do not allow the user to specify the date_applied date. The system will handle it.
     """
     seeker = models.ForeignKey(to=Seeker, on_delete=models.DO_NOTHING)
-    listing = models.ForeignKey(to=Listing, on_delete=models.DO_NOTHING)
+    listing = models.ForeignKey(to=Listing, on_delete=models.SET_NULL, null=True)
     date_applied = models.DateField()
 
     def __str__(self):

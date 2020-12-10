@@ -14,7 +14,7 @@ from django.contrib.auth.models import User, Group
 from django.forms import ValidationError
 from django.urls import reverse
 from seekers.forms import SeekerSignUpForm, RecruiterSignUpForm, AddSkillsForm, LoginForm, applyForm
-from seekers.models import Listing, Seeker, SeekerSkill, Skill, Application
+from seekers.models import Listing, Seeker, SeekerSkill, Skill, Application, ListingSkill
 from recruiters.models import Recruiter
 from django.contrib import messages
 # from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -149,6 +149,7 @@ def applicationView(request, ListingID) :
             "skills": SeekerSkill.objects.filter(seeker=currentSeeker),
             "form": form,
             "listing": Listing.objects.get(pk=ListingID),
+            'listingSkills': ListingSkill.objects.filter(listing=Listing.objects.get(pk=ListingID)),
         } 
 
         return render(request, 'seekers/apply.html', context)
@@ -394,7 +395,7 @@ def AddSeekerSkillsView(request) :
             # if error raised, send them back to the form with the error message
             try :
                 SeekerSkill.objects.create(seeker=seeker, skill=skill, level=level)
-            except IntegrityError as e:
+            except IntegrityError :
                 form.add_error(field='skill', error='You already have this skill!')
                 return render(request, 'seekers/addSkills.html', context={'form': form,})
             # render the profile if successful
@@ -501,7 +502,6 @@ def DeleteSeekerSkillsView(request, SeekerSkillID) :
 @login_required(login_url='login/')
 @permission_required('seekers.is_seeker', raise_exception=True)
 def userApplicationsView(request) :
-    print(request.user.is_authenticated)
     seeker = Seeker.objects.get(user=request.user)
     applications = Application.objects.filter(seeker__user=request.user)
     context = {   

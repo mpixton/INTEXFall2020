@@ -1,5 +1,5 @@
 from django import template
-from seekers.choices import SKILL_LEVEL
+from seekers.choices import SKILL_LEVEL, RELOCATION_ASSISTANCE
 
 register = template.Library()
 
@@ -10,3 +10,11 @@ def returnRating(value) :
             return skill[1]
 
 register.filter('returnRating', returnRating)
+
+# takes the relocation assistance and returns the human-readable string
+def returnReloc(value) :
+    for ra in RELOCATION_ASSISTANCE :
+        if str(ra[0]) == str(value) :
+            return ra[1]
+
+register.filter('returnReloc', returnReloc)

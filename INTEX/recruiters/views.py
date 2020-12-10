@@ -166,6 +166,7 @@ def DeleteListingView(request, ListingID) :
         context = {
             'form': PostJobForm(intialData),
             'ListingSkills': ListingSkill.objects.filter(listing=listing),
+            'Listing': listing.pk,
         }
         # render the template
         return render(request, 'recruiters/postJob.html', context=context)
@@ -175,6 +176,7 @@ def DeleteListingView(request, ListingID) :
         listingToDelete = Listing.objects.get(pk=ListingID)
         # deletes the listing
         listingToDelete.delete()
+            
         # redirects to the profile to confirm delete
         return redirect(reverse('Seekers:Profile', kwargs={'Type': 'recruiter', 'userID': request.user.pk,}))
     # else, display wrong method
@@ -303,7 +305,7 @@ def DeleteListingSkillView(request, ListingSkillID) :
         # set context
         context ={
             'form': AddListingSkillForm(initialData),
-            'Listing': updateLS.listing,
+            'Listing': updateLS.listing.pk,
             'OtherSkills': ListingSkill.objects.filter(listing=updateLS.listing).exclude(pk=ListingSkillID),
         }
         # render the template
