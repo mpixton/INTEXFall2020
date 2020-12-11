@@ -295,18 +295,18 @@ def DeleteListingSkillView(request, ListingSkillID) :
     # if GET, return bound form with data for review
     if request.method == 'GET' :
         # get the ListingSkill instance
-        updateLS = ListingSkill.objects.get(pk=ListingSkillID)
+        lstoDelete = ListingSkill.objects.get(pk=ListingSkillID)
         # populate initial data for the form
         initialData = {
-            'skill': updateLS.skill,
-            'level': updateLS.level,
-            'is_required': updateLS.is_required,
+            'skill': lstoDelete.skill,
+            'level': lstoDelete.level,
+            'is_required': lstoDelete.is_required,
         }
         # set context
         context ={
             'form': AddListingSkillForm(initialData),
-            'Listing': updateLS.listing.pk,
-            'OtherSkills': ListingSkill.objects.filter(listing=updateLS.listing).exclude(pk=ListingSkillID),
+            'Listing': lstoDelete.listing,
+            'OtherSkills': ListingSkill.objects.filter(listing=lstoDelete.listing).exclude(pk=ListingSkillID),
         }
         # render the template
         return render(request, 'recruiters/addSkill.html', context=context)

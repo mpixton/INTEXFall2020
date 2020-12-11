@@ -45,9 +45,9 @@
             <button type="submit" class="btn btn-primary" name="saveChanges">Save Changes </button>
             {% endif %}
             {% if 'deleteSkill' in request.path %}
-            <button type="submit" class="btn btn-primary" name="deleteJob">Delete Listing</button>
+            <button type="submit" class="btn btn-primary" name="deleteJob">Delete Skill</button>
             {% endif %}
-            <a href="{% url 'Recruiters:EditListing' ListingID=Listing %}"><button type="button" class="btn btn-primary">Cancel</button></a>
+            <a href="{% url 'Recruiters:EditListing' ListingID=Listing.pk %}"><button type="button" class="btn btn-primary">Cancel</button></a>
         </div>
     </div>
 </form>
