@@ -1,25 +1,42 @@
-from django import forms
-from seekers.models import Skill
-from django.forms import ValidationError
-from seekers.choices import ACCOUNT_TYPE, SKILL_LEVEL
-from recruiters.choices import SECTOR, SIZE
-from seekers.models import Seeker
-import re
+"""
+Defines the forms used by the Seekers app.
 
+Forms:
+    RecruitersSignUpForm: allows an Anonymous User to sign up for a Recruiter account
+    SeekersSignUpForm: allows an Anonymous User to sign up for a Job Seeker account
+    LoginForm: allows a User to login 
+    updateInfo: allows a Job Seeker to udpate their resume
+    ListingSearch: allows a User to search Listings
+    AddSkillsForm: allows a Job Seeker to add Skills to their profile
+    applyForm: allows a Job Seeker to apply for a Listing
+"""
+
+# Python Imports
+import re
+# Django Imports
+from django import forms
+# App Imports
+from recruiters import choices as rc
+from seekers import choices as sc
+from seekers import models as sm
 
 #disable no-member syntax error
 # pylint:disable=no-member
 
-class BaseSignUpForm(forms.Form) :
+class _BaseSignUpForm(forms.Form) :
     """
-    Abstract Form extended by Recruiter and Seeker SignUpForms.
-    Fields: \n
-    first_name -> CharField \n
-    last_name -> CharField \n
-    email -> EmailField \n
-    username -> CharField \n
-    password -> CharField(PasswordInput) \n
-    repeat_password -> CharField(PasswordInput) \n
+    Base form used by Recruiter and SeekerSignUpForms.
+    
+    Contains common fields to both. Allows a User of the website to sign up as 
+    either a Seeker or a Recruiter. Should not be used alone.
+
+    Fields:
+        first_name: CharField 
+        last_name: CharField 
+        email: EmailField 
+        username: CharField 
+        password: CharField(PasswordInput) 
+        repeat_password: CharField(PasswordInput) 
     """
     first_name = forms.CharField()
     last_name = forms.CharField()
@@ -30,38 +47,40 @@ class BaseSignUpForm(forms.Form) :
 
     def clean_repeat_password(self) :
         if self.cleaned_data.get('password') != self.cleaned_data.get('repeat_password') :
-            raise ValidationError('The passwords do not match!')
+            raise forms.ValidationError('The passwords do not match!')
 
-class RecruiterSignUpForm(BaseSignUpForm) :
+class RecruiterSignUpForm(_BaseSignUpForm) :
     """
-    Form to allow a Seeker to sign up for the website. \n
-    Fields : \n
-    email -> EmailField \n
-    username -> CharField \n
-    password -> CharField(PasswordWidget) \n
-    repeat_password -> CharField(PasswordWidget) \n
-    first_name -> CharField \n
-    last_name -> CharField \n
-    employee_job_title -> CharField \n
-    org_name -> CharField \n
+    Provides a Recruiter a way to sign up for an account.
+
+    Fields : 
+        email: EmailField 
+        username: CharField 
+        password: CharField(PasswordWidget) 
+        repeat_password: CharField(PasswordWidget) 
+        first_name: CharField 
+        last_name: CharField 
+        employee_job_title: CharField 
+        org_name: CharField 
     """
     employee_job_title = forms.CharField(label='Your Job Title')
     org_name = forms.CharField()
 
-    field_order = ['first_name', 'last_name', 'org_name', 'employee_job_title', 'email','username', 'password', 'repeat_password', 'phone']
+    field_order = ['first_name', 'last_name', 'org_name', 'employee_job_title', 'email','username', 'password', 'repeat_password']
 
 
-class SeekerSignUpForm(BaseSignUpForm) :
+class SeekerSignUpForm(_BaseSignUpForm) :
     """
-    Form to allow a Seeker to sign up for the website. \n
-    Fields : \n
-    email -> EmailField \n
-    username -> CharField \n
-    password -> CharField(PasswordWidget) \n
-    repeat_password -> CharField(PasswordWidget) \n
-    first_name -> CharField \n
-    last_name -> CharField \n
-    phone -> CharField \n
+    Provides a Seeker a way to sign up for an account.
+
+    Fields : 
+        email: EmailField 
+        username: CharField 
+        password: CharField(PasswordWidget) 
+        repeat_password: CharField(PasswordWidget) 
+        first_name: CharField 
+        last_name: CharField 
+        phone: CharField 
     """
     phone = forms.CharField(max_length=15, required=False)
     # resume = forms.FileField(label='Resume')
@@ -79,36 +98,58 @@ class SeekerSignUpForm(BaseSignUpForm) :
 
 class LoginForm(forms.Form) :
     """
-    Form to allow a user to login. \n
-    Fields: \n
-    username -> CharField \n
-    password -> CharField(PasswordInput) \n
+    Allows logging into the site.
+
+    Fields: 
+        username: CharField 
+        password: CharField(PasswordInput) 
     """
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
 
-
+# //TODO FUTURE 
+# Gives Job Seekers a way to update thier info
 class updateInfo(forms.Form) :
+    """
+    Form to allow a Job Seeker to upload a new resume. 
+
+    Fields: 
+        newResume: FileField 
+    """
     newResume = forms.FileField()
-    newSkill = forms.ModelChoiceField(Skill.objects.all())
 
 
 class ListingSearch(forms.Form) :
+    """
+    Allows a User to search site Listings.
+
+    Fields: 
+        keyword: CharField 
+    """
     keyword = forms.CharField()
 
 
 class AddSkillsForm(forms.Form) :
     """
-    Form to add a skill to a user. \n
-    Fields: \n
-    skill -> ModelChoiceField(SkillObject) \n
-    level -> ChoiceField(SKILL_LEVEL) \n
+    Adds a skill to a Seeker.
+
+    Fields: 
+        skill: ModelChoiceField -> SkillObject 
+        level: ChoiceField, choices SKILL_LEVEL 
     """
-    skill = forms.ModelChoiceField(Skill.objects.all())
-    level = forms.ChoiceField(choices=SKILL_LEVEL)
+    skill = forms.ModelChoiceField(sm.Skill.objects.all())
+    level = forms.ChoiceField(choices=sc.SKILL_LEVEL)
 
 
 class applyForm(forms.Form) :
+    """
+    Allows a Seeker to apply for a Listing.
+
+    Fields: 
+        first_name: CharField 
+        last_name: CharField 
+        email: EmailField 
+    """
     first_name = forms.CharField()
     last_name = forms.CharField()
     email = forms.EmailField()

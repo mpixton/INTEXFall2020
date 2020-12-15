@@ -9,10 +9,13 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
-
-from pathlib import Path
+# Python Imports
 import os
+from pathlib import Path
+# Django Imports
 from django.urls import reverse
+from django.core.exceptions import ImproperlyConfigured
+# Third Party Imports
 import django_heroku
 import dj_database_url
 import django_heroku 
@@ -25,8 +28,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
-# SECRET_KEY = '-ww5ebe@ygca#sq#r=8u9k1%1nhqh1=)9$!qjlg&+!s==#pxp^'
+# SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = '-ww5ebe@ygca#sq#r=8u9k1%1nhqh1=)9$!qjlg&+!s==#pxp^'
 
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')

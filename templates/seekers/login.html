@@ -27,6 +27,7 @@
         <br>
         {{ form.password.label_tag }}
         {{ form.password }}
+        {{ form.password.errors }}
         
         {% if messages is not None %}
             {% for message in messages %}

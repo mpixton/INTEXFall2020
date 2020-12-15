@@ -1,3 +1,11 @@
+"""
+Defines choices for the Recruiters app.
+
+Constants:
+    SIZE: The organization size
+    SECTOR: The organization sector
+"""
+
 SIZE = [
     (1, 'BG'),
     (2, 'MC'),

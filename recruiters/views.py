@@ -1,30 +1,43 @@
-from django.shortcuts import render, redirect
+"""
+View functions for the Recruiters app.
 
-# Create your views here.
-# pylint:disable=no-member
+Functions:
+    applicantsView: displays all applicants to a Listing.
+    AddListingView: allows a Recruiter to add a Listing.
+    EditListingView: allows a Recruiter to edit a Listing.
+    DeleteListingView: allows a Recruiter to delete a Listing.
+    AddListingSkillView: allows a Recruiter to add a Listing Skill.
+    EditListingSkillView: allows a Recruiter to edit a Listing Skill.
+    DeleteListingSkillView: allows a Recruiter to delete a Listing Skill.
+"""
+# Python Imports
+
+# Django Imports
+from django.db import IntegrityError
+from django.forms import ValidationError
 from django.http import HttpResponse, Http404, HttpResponseRedirect
-from recruiters.models import Recruiter, User
-from seekers.models import Listing, Skill, ListingSkill, ContractLength, ContractType
-from recruiters.forms import PostJobForm, AddListingSkillForm
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required, permission_required
-from django.forms import ValidationError
-from django.db import IntegrityError
+# App Imports
+from recruiters.forms import PostJobForm, AddListingSkillForm
+from recruiters.models import Recruiter, User
+from seekers.models import Listing, Skill, ListingSkill, ContractLength, ContractType
 
-def indexView(request) :
-    """
-    Index view of the recruiters app. \n
-    Takes no GET parameters. \n
-    """
-
-    return HttpResponse('Welcome!')
+# pylint:disable=no-member
 
 @login_required()
+@permission_required('recruiters.is_recruiter', raise_exception=True)
 def applicantsView(request) :
     """
-    Shows a Recruiter Job Seekers that have applied to Listings posted by the logged in Recruiter. \n
-    """
+    Displays all Job Seekers that have applied to a Listing.
 
+    GET:
+        Shows a Recruiter the applicant's to their Listings.
+
+        Args:
+            None
+    """
     recruiter = Recruiter.objects.get(user=request.user)
     jobs = Listing.objects.filter(posted_by=recruiter)
 
@@ -36,27 +49,32 @@ def applicantsView(request) :
 
 @login_required()
 @permission_required('recruiters.is_recruiter', raise_exception=True)
-def createJobPostingView(request) :
+def AddListingView(request) :
     """
-    Allows a Recruiter to create a new job listing. \n
-    If GET method used, return a blank form to create the listing \n
-    If POST method used, create the listing using the form \n
+    Allows a Recruiter to create a new job listing 
+
+    GET:
+        Return a blank form for the Recruiter to fill out.
+
+        Args:
+            None
+    POST:
+        Create the Listing from the form the Recruiter filled out and 
+        redirects them to their profile to verify it went through.
     """
     # check the request method
     # if GET, render blank form
     if request.method == 'GET' :
-        # instantiate the blank form
         context = {
             'form': PostJobForm(),
         }
         return render(request, 'recruiters/postJob.html', context=context)
     # if POST, create the listing and send the recruiter to the profile page
     elif request.method == 'POST' :
-        # put the data into the form to check for validation
         form = PostJobForm(request.POST)
-        # if no validation errors raised, allow to progress
+        # check if form is valid
+        # if valid, add the listing
         if form.is_valid() :
-            # assign variables
             job_title = form.cleaned_data.get('job_title')
             job_description = form.cleaned_data.get('job_description')
             location = form.cleaned_data.get('location')
@@ -66,30 +84,45 @@ def createJobPostingView(request) :
             salary_upper = form.cleaned_data.get('salary_upper')
             salary_lower = form.cleaned_data.get('salary_lower')
             reloc = form.cleaned_data.get('reloc')
-            # create the listing
-            Listing.objects.create(listing_job_title=job_title, job_description=job_description, location=location, contract_length=contract_length, contract_type=contract_type, posted_by=poster, salary_lower=salary_lower, salary_upper=salary_upper, relocation_assistance=reloc)
-            # render the profile page
+            
+            Listing.objects.create(
+                listing_job_title=job_title, 
+                job_description=job_description, 
+                location=location, 
+                contract_length=contract_length, 
+                contract_type=contract_type, 
+                posted_by=poster, 
+                salary_lower=salary_lower, 
+                salary_upper=salary_upper, 
+                relocation_assistance=reloc
+                )
+            # send the Recruiter to their profile
             return redirect(reverse('Seekers:Profile', kwargs={'Type': 'recruiter', 'userID': request.user.pk}))
+        # if invalid form, render the Post Job page with the form's errors
         else :
             return render(request, 'recruiters/postJob.html', context={'form': form})
     # invalid method 
     else :
         return HttpResponse('i am an invalid method on the post job view')
     
-
 @login_required()
 @permission_required('recruiters.is_recruiter', raise_exception=True)
 def EditListingView(request, ListingID):
     """
-    Allows a Recruiter to edit a listing previously posted \n
-    GET parameters: ListingID-> pk of the Listing to be edited \n
-    If GET method used, returns the current data to for review \n
-    If POST method used, updates the object \n
+    Allows a Recruiter to edit a listing previously posted.
+
+    GET: 
+        Returns the Listing data in a form for the Recruiter to edit.
+        
+        Args:
+            ListingID: pk of the Listing to be edited
+    POST:
+        Saves the changes made on the form to the model and redirects the 
+        Recruiter to their profile to verify it went through.
     """
     # checks the request method
     # if GET, return the listing for review
     if request.method == 'GET' : 
-        # pulls object from DB
         listing = Listing.objects.get(pk=ListingID)
         # creates the intital data to populate the form with
         intialData = {
@@ -102,7 +135,6 @@ def EditListingView(request, ListingID):
             'salary_lower': listing.salary_lower,
             'reloc': listing.relocation_assistance,
         }
-        # creates the context
         context = {
             'form': PostJobForm(intialData),
             'ListingID': listing.pk,
@@ -112,13 +144,12 @@ def EditListingView(request, ListingID):
         return render(request, 'recruiters/postJob.html', context=context)
     # if POST, save the data and redirect to profile
     elif request.method == 'POST' :
-        # puts the post data in a form to check if the data is valid
         form = PostJobForm(request.POST) 
+        # check if form is valid
         # if valid, proceed with update
         if form.is_valid() :
-            # pulls the object to update
             updateListing = Listing.objects.get(pk=ListingID)
-            # updats the listing
+
             updateListing.job_title = form.cleaned_data.get('job_title')
             updateListing.job_description = form.cleaned_data.get('job_description')
             updateListing.location = form.cleaned_data.get('location')
@@ -130,10 +161,10 @@ def EditListingView(request, ListingID):
             updateListing.save()
             # redirect to the profile page
             return redirect(reverse('Seekers:Profile', kwargs={'Type': 'recruiter', 'userID': request.user.pk}))
-        # if invalid, display so
+        # if invalid, display the edit Page with the form errors
         else :
             return render(request, 'recruiters/postJob.html', context={'form': form,})
-    # else, display wrong method
+    # invalid method
     else :
         return HttpResponse('i am an invalid method on the edit listing view')
 
@@ -141,10 +172,16 @@ def EditListingView(request, ListingID):
 @permission_required('recruiters.is_recruiter', raise_exception=True)
 def DeleteListingView(request, ListingID) :
     """
-    Allows a Recruiter to delete a listing previously posted \n
-    GET parameters: ListingID-> pk of the Listing object to delete \n
-    If GET method used, returns the form with the data to preview before deletion \n
-    If POST method used, deletes the listing \n
+    Allows a Recruiter to delete a listing previously posted.
+    
+    GET:
+        Returns a form with data to review prior to deletion.
+
+        Args:
+            ListingID: pk of the Listing object to delete
+    POST:
+        Deletes the selected Listing and redirects the Recruiter to their 
+        profile to verify the deletion went through.
     """
     # checks the request method
     # if GET, renders the form with data populated
@@ -172,25 +209,30 @@ def DeleteListingView(request, ListingID) :
         return render(request, 'recruiters/postJob.html', context=context)
     # if POST, delete the listing and reroute to profile view
     elif request.method == 'POST' :
-        # gets the listing to delete
         listingToDelete = Listing.objects.get(pk=ListingID)
-        # deletes the listing
-        listingToDelete.delete()
-            
+
+        listingToDelete.delete()            
         # redirects to the profile to confirm delete
-        return redirect(reverse('Seekers:Profile', kwargs={'Type': 'recruiter', 'userID': request.user.pk,}))
-    # else, display wrong method
+        return redirect(reverse('Seekers:Profile', kwargs={'Type': 'recruiter', 'userID': request.user.pk}))
+    # invalid method
     else :
-        return HttpResponse('wrong method')
+        return HttpResponse('I am a wrong method on the delete listing view')
 
 @login_required()
 @permission_required('recruiters.is_recruiter', raise_exception=True)
 def AddListingSkill(request, ListingID) :
     """
-    Adds a Skill to a Listing. \n
-    GET Parameters: ListingID-> pk of the Listing object to add a Listing Skill to \n
-    If GET method used, returns a blank form to allow a Recruiter to add a Skill to the Listing \n
-    If POST method used, adds the Skill to the Listing via the ListingSKill table \n
+    Adds a Skill to a Listing.
+
+    GET: 
+        Returns a blank form to allow a Recruiter to add a Skill to the Listing.
+
+        Args:
+            ListingID: pk of the Listing object to add a Listing Skill to
+    POST:
+        Adds the Skill to the Listing via the ListingSkill table and 
+        redirects the Recruiter to their profile to verify it went 
+        through.
     """
     # check the method
     # if GET, return a blank form
@@ -202,15 +244,15 @@ def AddListingSkill(request, ListingID) :
         return render(request, 'recruiters/addSkill.html', context=context)
     # if POST, create a new ListingSkill object
     elif request.method == 'POST' :
-        # put all data in the form
         form = AddListingSkillForm(request.POST) 
-        # check for validation errors.
+        # check form for validation errors
         # if error raised, send them back to the form with the error message
         try :
             form.is_valid()
         except ValidationError :
             return render(request, 'recruiters/addSkill.html', context={'form': form,})
         # check if form is valid
+        # if valid, procedd with creating the skill
         if form.is_valid() :
             skill = form.cleaned_data.get('skill')
             level = form.cleaned_data.get('level')
@@ -223,9 +265,10 @@ def AddListingSkill(request, ListingID) :
                 return render(request, 'recruiters/addSkill.html', context={'form': form, 'Listing': ListingID,})
             # redirect the user to the Listing to see the skills
             return redirect(reverse('Recruiters:EditListing', kwargs={'ListingID': ListingID}))
-        # if not valid, tell the user
+        # if not valid, return form with errors
         else :
-            return HttpResponse('I am an invalid form in the ListingSkills section')
+            return render(request, 'recruiters/addSkill.html', context={'form': form, 'Listing': ListingID})
+    # invalid method
     else :
         return HttpResponse('I am a wrong method on the add listing skills')
 
@@ -233,15 +276,20 @@ def AddListingSkill(request, ListingID) :
 @permission_required('recruiters.is_recruiter', raise_exception=True)
 def EditListingSkillView(request, ListingSkillID) :
     """
-    Allows a Recruiter to edit the ListingSkills associated with their listing \n
-    GET parameters: ListingSkillID-> pk of the ListingSkill object to be edited \n
-    If GET method used, returns a bound form with the ListingSkills data to edit \n
-    If POST method used, saves the changes to the skill \n
+    Allows editing of the ListingSkills associated with a Listing.
+    
+    GET:
+        Returns a bound form with the ListingSkills data to edit.
+
+        Args:
+            ListingSkillID: pk of the ListingSkill object to be edited
+    POST:
+        Saves the changes to the ListingSkill and redirects to the 
+        Recruiter's profile to verify it went through.
     """ 
     # checks the method used to access the action
     # if GET, return bound form
     if request.method == 'GET' :
-        # get the ListingSkill instance
         updateLS = ListingSkill.objects.get(pk=ListingSkillID)
         # populate initial data for the form
         initialData = {
@@ -249,7 +297,7 @@ def EditListingSkillView(request, ListingSkillID) :
             'level': updateLS.level,
             'is_required': updateLS.is_required,
         }
-        # set context
+
         context ={
             'form': AddListingSkillForm(initialData),
             'Listing': updateLS.listing,
@@ -257,20 +305,20 @@ def EditListingSkillView(request, ListingSkillID) :
         }
         # render the template
         return render(request, 'recruiters/addSkill.html', context=context)
-    # if POST, save changes to the form
+    # if POST, save changes 
     elif request.method == 'POST' :
         form = AddListingSkillForm(request.POST)
-        # checks if new data is valid
         # check for validation errors.
         # if error raised, send them back to the form with the error message
         try :
             form.is_valid()
         except ValidationError :
             return render(request, 'recruiters/addSkill.html', context={'form': form,})
+        # checks if new data is valid
+        # if valid, proceed
         if form.is_valid() :
-            # gets the ListingSkill instance
             updateLS = ListingSkill.objects.get(pk=ListingSkillID)
-            # updates the ListingSkill instance
+
             updateLS.skill = form.cleaned_data.get('skill')
             updateLS.level = form.cleaned_data.get('level')
             updateLS.is_required = form.cleaned_data.get('is_required')
@@ -278,7 +326,8 @@ def EditListingSkillView(request, ListingSkillID) :
             # redirects back to the edit listing page
             return redirect(reverse('Recruiters:EditListing', kwargs={'ListingID':updateLS.listing.pk}))
         else :
-            return HttpResponse('i am an invalid form on the edit listing skills call')
+            return render(request, 'recruiters/addSkill.html', context={'form': form, 'Listing': updateLS.pk})
+    # invalid method
     else :
         return HttpResponse('I am a wrong method on the edit listing skills call')
 
@@ -286,15 +335,20 @@ def EditListingSkillView(request, ListingSkillID) :
 @permission_required('recruiters.is_recruiter', raise_exception=True)
 def DeleteListingSkillView(request, ListingSkillID) :
     """
-    Allows a user to delete the Skill associated with the Listing. \n
-    GET parameters: ListingSkillID-> pk of the ListingSkill object to be deleted \n
-    If GET method used, returns a bound form for review prior to deletion \n
-    If POST method used, deletes the ListingSkill instance and returns the Recruiter to the editListing page. \n
+    Allows a Recruiter to delete a ListingSkill.
+
+    GET: 
+        Returns a bound form for review prior to deletion.
+    
+        Args:
+            ListingSkillID: pk of the ListingSkill object to be deleted
+    POST:
+        Deletes the ListingSkill instance and returns the Recruiter to the 
+        editListing page.
     """
     # check the method used
     # if GET, return bound form with data for review
     if request.method == 'GET' :
-        # get the ListingSkill instance
         lstoDelete = ListingSkill.objects.get(pk=ListingSkillID)
         # populate initial data for the form
         initialData = {
@@ -302,7 +356,7 @@ def DeleteListingSkillView(request, ListingSkillID) :
             'level': lstoDelete.level,
             'is_required': lstoDelete.is_required,
         }
-        # set context
+
         context ={
             'form': AddListingSkillForm(initialData),
             'Listing': lstoDelete.listing,
@@ -310,15 +364,15 @@ def DeleteListingSkillView(request, ListingSkillID) :
         }
         # render the template
         return render(request, 'recruiters/addSkill.html', context=context)
+    # if POST, delete the object
     elif request.method == 'POST' :
-        # get the instance to delete
         lsToDelete = ListingSkill.objects.get(pk=ListingSkillID)
         # gets the listing to return to before deleting the instance
         listingID = lsToDelete.listing
-        # deletes the listing skill
+
         lsToDelete.delete()
         # redirects to the Listing page that the Listing Skill we just deleted was associated with
         return  redirect(reverse('Recruiters:EditListing', kwargs={'ListingID':listingID.pk}))
-    # else invalid method, return an error string
+    # else invalid method
     else :
         return HttpResponse('I am a wrong method error on the delete listing skills call')

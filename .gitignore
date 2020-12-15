@@ -3,6 +3,7 @@
 
 # Micah's ignore
 TODO
+StyleGuide.md
 
 ### Django ###
 *.log
