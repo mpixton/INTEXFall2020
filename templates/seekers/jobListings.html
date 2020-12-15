@@ -9,20 +9,20 @@
 
 {% block header %}
 <div class="container" >
-    <h1 style="align-self: center;">Job Listings</h1>
-        <div class="form-row">
-          <div class="col-12 col-md-9 mb-2 mb-md-0">
+  <h1 style="align-self: center;">Job Listings</h1>
+    <div class="form-row">
+      <div class="col-12 col-md-9 mb-2 mb-md-0">
 
-            <form  action="{% url 'Seekers:SearchBar' SearchString='intern' %}" method='GET'>
-              <input type="text" name='search' id='search' class="form-control form-control-lg" placeholder="Search by job title, location, company...">
-              <button type="submit" class="btn btn-block btn-lg btn-primary" id='search_submit'>Search</button>
-            </form>
-         
-          </div>
-          <div class="col-12 col-md-3">
-          
-          </div>
-        </div>
+        <form  action="{% url 'Seekers:SearchBar' SearchString='intern' %}" method='GET'>
+          <input type="text" name='search' id='search' class="form-control form-control-lg" placeholder="Search by job title, location, company...">
+          <button type="submit" class="btn btn-block btn-lg btn-primary" id='search_submit'>Search</button>
+        </form>
+      
+      </div>
+      <div class="col-12 col-md-3">
+      
+      </div>
+    </div>
 </div>
 
 <br>
@@ -63,18 +63,18 @@
         <div class='listing-skills'>
           <h3>Skills</h3>
           <div class='listing-skill-row'>
-                  <div class='listing-skill-item'><h5>Skill</h5></div> 
-                  <div class='listing-skill-item'><h5>Level of Experience</h5></div> 
-                  <div class='listing-skill-item'></div>
+            <div class='listing-skill-item'><h5>Skill</h5></div> 
+            <div class='listing-skill-item'><h5>Level of Experience</h5></div> 
+            <div class='listing-skill-item'></div>
           </div>
             {% for skill in job.listingskill_set.all  %}
-                <div class='listing-skill-row'>
-                  <div class='listing-skill-item'>{{ skill.skill|title }}</div> 
-                  <div class='listing-skill-item'>{{ skill.level|returnRating }}</div> 
-                  <div class='listing-skill-item'>{% if skill.is_required %}Required{% else %}Preferred{% endif %}</div>
-                </div>
-              {% empty %}
-                <p>No Skills Listed</p>
+              <div class='listing-skill-row'>
+                <div class='listing-skill-item'>{{ skill.skill|title }}</div> 
+                <div class='listing-skill-item'>{{ skill.level|returnRating }}</div> 
+                <div class='listing-skill-item'>{% if skill.is_required %}Required{% else %}Preferred{% endif %}</div>
+              </div>
+            {% empty %}
+              <p>No Skills Listed</p>
             {% endfor %}
         </div>
         {% if perms.seekers.is_seeker %}

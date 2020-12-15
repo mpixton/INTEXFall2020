@@ -2,12 +2,12 @@
 {% load static %}
 
 {% block nameOfTab %}
-<title>Login Page</title>
+  <title>Login Page</title>
 {% endblock %}
 
 {% block header %}
 <div class="container">
-    <h1>Welcome to Black Cyber Recruiter</h1>
+  <h1>Welcome to Black Cyber Recruiter</h1>
 </div>
 {% endblock %}
 
@@ -15,83 +15,82 @@
 
 {% block firstSection %}
 
-    <form action= "{% url 'Seekers:Login' %}" method='POST' style="border:1px solid #ccc">
-        <div class="container">
-        <h4>Please login to continue.</h4>
-        <hr>
+<form action= "{% url 'Seekers:Login' %}" method='POST' style="border:1px solid #ccc">
+  <div class="container">
+  <h4>Please login to continue.</h4>
+  <hr>
 
-        {% csrf_token %}
+  {% csrf_token %}
 
-        {{ form.username.label_tag }}
-        {{ form.username }}
-        <br>
-        {{ form.password.label_tag }}
-        {{ form.password }}
-        {{ form.password.errors }}
-        
-        {% if messages is not None %}
-            {% for message in messages %}
-                <p>{{message}}</p>
-            {% endfor %}
-        {% endif %}
+  {{ form.username.label_tag }}
+  {{ form.username }}
+  <br>
+  {{ form.password.label_tag }}
+  {{ form.password }}
+  {{ form.password.errors }}
+  
+  {% if messages is not None %}
+    {% for message in messages %}
+      <p>{{message}}</p>
+    {% endfor %}
+  {% endif %}
 
-            <div class="clearfix">
-                <button type="submit" class="btn btn-primary">Login</button>
-                <button type="button" class="btn btn-primary">Cancel</button>
-                <br>
-            </div>
-        </div>
-    </form>
-    
-    <br>
-
-    <div class="container">
-    <h3>Don't have an account?</h3>
-    <p>Create one here!</p>
-        <div class="container-row">
-            <form action="{% url 'Seekers:CreateAccount' AccountType='S' %}" method="GET">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-primary">I am a Job Seeker</button>
-            </form>
-            <br>
-            <form action="{% url 'Seekers:CreateAccount' AccountType='R' %}" method="GET">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-primary">I am a Recruiter</button>
-            </form>
-
-        </div>
+    <div class="clearfix">
+      <button type="submit" class="btn btn-primary">Login</button>
+      <button type="button" class="btn btn-primary">Cancel</button>
+      <br>
     </div>
+  </div>
+</form>
+
+<br>
+
+<div class="container">
+<h3>Don't have an account?</h3>
+<p>Create one here!</p>
+  <div class="container-row">
+    <form action="{% url 'Seekers:CreateAccount' AccountType='S' %}" method="GET">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary">I am a Job Seeker</button>
+    </form>
+    <br>
+    <form action="{% url 'Seekers:CreateAccount' AccountType='R' %}" method="GET">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary">I am a Recruiter</button>
+    </form>
+  </div>
+</div>
 
 {% endblock %} 
 {% block secondSection %}
-    <section class="testimonials text-center bg-light" >
-    <div class="container" >
-      <h2 class="mb-5" >Why join Black Cyber Recruiter?</h2>
-      <div class="row" >
-        <div class="col-lg-4">
-          <div class="testimonial-item mx-auto mb-5 mb-lg-0">
-            <img class="img-fluid rounded-circle mb-3" src="https://d2mkcg26uvg1cz.cloudfront.net/wp-content/uploads/elder-african-american-business-woman.jpg" alt="">
-            <h5>Margaret E.</h5>
-            <p class="font-weight-light mb-0">"As a recruiter, we love how easy it is to find great candidates to join our team!"</p>
-          </div>
+<section class="testimonials text-center bg-light" >
+  <div class="container" >
+    <h2 class="mb-5" >Why join Black Cyber Recruiter?</h2>
+    <div class="row" >
+      <div class="col-lg-4">
+        <div class="testimonial-item mx-auto mb-5 mb-lg-0">
+          <img class="img-fluid rounded-circle mb-3" src="https://d2mkcg26uvg1cz.cloudfront.net/wp-content/uploads/elder-african-american-business-woman.jpg" alt="">
+          <h5>Margaret E.</h5>
+          <p class="font-weight-light mb-0">"As a recruiter, we love how easy it is to find great candidates to join our team!"</p>
         </div>
-        <div class="col-lg-4">
-          <div class="testimonial-item mx-auto mb-5 mb-lg-0">
-          <img class="img-fluid rounded-circle mb-3" src="https://blackbusinessblog178003515.files.wordpress.com/2020/10/sanmi.jpg?w=450" alt="">
-            <h5>Fred S.</h5>
-            <p class="font-weight-light mb-0">"BCR was a smooth and simple process. I found my dream job quickly and would recommend everyone else to do the same."</p>
-          </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="testimonial-item mx-auto mb-5 mb-lg-0">
+        <img class="img-fluid rounded-circle mb-3" src="https://blackbusinessblog178003515.files.wordpress.com/2020/10/sanmi.jpg?w=450" alt="">
+          <h5>Fred S.</h5>
+          <p class="font-weight-light mb-0">"BCR was a smooth and simple process. I found my dream job quickly and would recommend everyone else to do the same."</p>
         </div>
-        <div class="col-lg-4">
-          <div class="testimonial-item mx-auto mb-5 mb-lg-0">
-            <img class="img-fluid rounded-circle mb-3" src="https://media.gettyimages.com/photos/portrait-of-smiling-african-american-woman-picture-id1194465573" alt="">
-            <h5>Sarah W.</h5>
-            <p class="font-weight-light mb-0">"Prior to joining BCR, the job hunt was a headache and discouraging. Im grateful for the resources and efficinecy of BCR!"</p>
-          </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="testimonial-item mx-auto mb-5 mb-lg-0">
+          <img class="img-fluid rounded-circle mb-3" src="https://media.gettyimages.com/photos/portrait-of-smiling-african-american-woman-picture-id1194465573" alt="">
+          <h5>Sarah W.</h5>
+          <p class="font-weight-light mb-0">"Prior to joining BCR, the job hunt was a headache and discouraging. Im grateful for the resources and efficinecy of BCR!"</p>
         </div>
       </div>
     </div>
-    <hr>
-  </section>
+  </div>
+  <hr>
+</section>
 {% endblock%}
 

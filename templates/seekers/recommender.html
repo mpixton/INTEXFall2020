@@ -2,41 +2,38 @@
 {% load static %}
 
 {% block nameOfTab %}
-<title>Job Seeker+</title>
+  <title>Job Seeker+</title>
 {% endblock %}
 
 {% block header %}
 <div class="container">
-    <h1>Job Seeker+</h1>
+  <h1>Job Seeker+</h1>
 </div>
 {% endblock %}
 
 {% block firstSection %}
 <div class="container">
-    <h5>Coming Soon!</h5>
-    <h8>Black Cyber Recruiter has a unique and powerful software tool in the works.
-        Job Seeker+ will be available in the coming months for all individuals who have an account with us and are seeking employment.
-        This software will use collected data from your profile and resume (previous jobs, skills, education, etc).
-        The collected data will be used for predictive analysis to give you suggesstions on which jobs your should currently apply for!
-        Job Seeker+ will give job seekers one more tool to help them find their perfect job. Stay tuned! 
-    </h8> <br> <br>
-    <p> We have a preview of this tool for you available now. Using data we have already collected, we have inputted a job seeker named "Dawn Cordona". 
-        Job Seeker+ has used both her current job as a Marketing Consultant, and the skills she has for that job.
-        Job Seeker+ now predicts the best five jobs for her to apply to below. Check it out!</p>
-    <p style="text-decoration: underline">Dawn Cordona's Top 5 Jobs Opportunities!</p>
-    <p>{{ Job_1 }}</p>
-    <p>{{ Job_2 }}</p>
-    <p>{{ Job_3 }}</p>
-    <p>{{ Job_4 }}</p>
-    <p>{{ Job_5 }}</p>
-    <!-- <a href="{% url 'Seekers:LearnMore' %}"><button type="button" class="btn btn-primary">Learn More</button></a> -->
-    <h5 style="text-align:center">Job Seeker+ Coming Soon!</h5>
+  <h5>Coming Soon!</h5>
+  <h8>Black Cyber Recruiter has a unique and powerful software tool in the works.
+      Job Seeker+ will be available in the coming months for all individuals who have an account with us and are seeking employment.
+      This software will use collected data from your profile and resume (previous jobs, skills, education, etc).
+      The collected data will be used for predictive analysis to give you suggesstions on which jobs your should currently apply for!
+      Job Seeker+ will give job seekers one more tool to help them find their perfect job. Stay tuned! 
+  </h8> <br> <br>
+  <p> We have a preview of this tool for you available now. Using data we have already collected, we have inputted a job seeker named "Dawn Cordona". 
+      Job Seeker+ has used both her current job as a Marketing Consultant, and the skills she has for that job.
+      Job Seeker+ now predicts the best five jobs for her to apply to below. Check it out!</p>
+  <p style="text-decoration: underline">Dawn Cordona's Top 5 Jobs Opportunities!</p>
+  <p>{{ Job_1 }}</p>
+  <p>{{ Job_2 }}</p>
+  <p>{{ Job_3 }}</p>
+  <p>{{ Job_4 }}</p>
+  <p>{{ Job_5 }}</p>
+  <!-- <a href="{% url 'Seekers:LearnMore' %}"><button type="button" class="btn btn-primary">Learn More</button></a> -->
+  <h5 style="text-align:center">Job Seeker+ Coming Soon!</h5>
 </div>
-
-
-
 <div class="container"> 
-    <img class="card-img-top" src="https://media.tenor.com/images/b66b6e2b9bcb3e7102470ef953eb3a11/tenor.gif" width="1" height="600">
+  <img class="card-img-top" src="https://media.tenor.com/images/b66b6e2b9bcb3e7102470ef953eb3a11/tenor.gif" width="1" height="600">
 </div>
 {% endblock %}
 

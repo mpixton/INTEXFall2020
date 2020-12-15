@@ -8,66 +8,67 @@
 
 {% block header %}
 <div class="container">
-    <h1>Profile for {{ profile.user.first_name }} {{ profile.user.last_name }} </h1>
-        <div class="row rowForJobListings" style="border:groove black">
-            <div class="col-lg-12">
-                <h3>Username:  {{ profile.user.username }}</h3>
-                <h3>Email: {{ profile.user.email }}</h3>
+  <h1>Profile for {{ profile.user.first_name }} {{ profile.user.last_name }} </h1>
+  <div class="row rowForJobListings" style="border:groove black">
+    <div class="col-lg-12">
+      <h3>Username: {{ profile.user.username }}</h3>
+      <h3>Email: {{ profile.user.email }}</h3>
 
-                {% if perms.recruiters.is_recruiter %}
-                <h3>Organization: {{ profile.org }}</h3>
-                {% elif perms.seekers.is_seeker %}
-                <h3>Phone: {{ profile.phone }}</h3> 
-                {% endif %}
+      {% if perms.recruiters.is_recruiter %}
+        <h3>Organization: {{ profile.org }}</h3>
+      {% elif perms.seekers.is_seeker %}
+        <h3>Phone: {{ profile.phone }}</h3> 
+      {% endif %}
 
-                {% if perms.seekers.is_seeker %}
-                <div class='seeker-skill-row'>
-                    <div class='seeker-skill-skill-description'><h3>Skill</h3></div>
-                    <div class='seeker-skill-skill-description'><h3>Rating</h3></div>
-                    <div class='seeker-skill-button'></div> 
-                    <div class='seeker-skill-button'></div> 
-                </div>
-                    {% for skill in skills %}
-                            <div class='seeker-skill-row'>
-                                <div class='seeker-skill-skill-description'>{{ skill.skill.skill_name|title}}</div>
-                                <div class='seeker-skill-skill-description'>{{ skill.level|returnRating }}</div>
-                                <div class='seeker-skill-button'><a href="{% url 'Seekers:EditSkills' SeekerSkillID=skill.pk %}"><button type="button" class="btn btn-primary">Edit</button></a></div> 
-                                <div class='seeker-skill-button'><a href="{% url 'Seekers:DeleteSkills' SeekerSkillID=skill.pk %}"><button type="button" class="btn btn-primary">Delete</button></a></div> 
-                            </div>
-                        {% empty %}
-                        <div class='skill-item'>You currently have no skills attached to your account. Use the Add Skills button to attach skills to your account.</div>
-                    {% endfor %}
-                <div class="profile-footer">
-                <a href="{% url 'Seekers:AddSkills' %}"><button type="submit" class="btn btn-primary">Add A Skill</button></a>
-                <a href="{% url 'Seekers:UserApplication' %}"><button type="submit" class="btn btn-primary">My Applications</button></a>
-                </div>
+      {% if perms.seekers.is_seeker %}
+      <div class='seeker-skill-row'>
+        <div class='seeker-skill-skill-description'><h3>Skill</h3></div>
+        <div class='seeker-skill-skill-description'><h3>Rating</h3></div>
+        <div class='seeker-skill-button'></div> 
+        <div class='seeker-skill-button'></div> 
+      </div>
+        {% for skill in skills %}
+          <div class='seeker-skill-row'>
+            <div class='seeker-skill-skill-description'>{{ skill.skill.skill_name|title}}</div>
+            <div class='seeker-skill-skill-description'>{{ skill.level|returnRating }}</div>
+            <div class='seeker-skill-button'><a href="{% url 'Seekers:EditSkills' SeekerSkillID=skill.pk %}"><button type="button" class="btn btn-primary">Edit</button></a></div> 
+            <div class='seeker-skill-button'><a href="{% url 'Seekers:DeleteSkills' SeekerSkillID=skill.pk %}"><button type="button" class="btn btn-primary">Delete</button></a></div> 
+          </div>
+        {% empty %}
+          <div class='skill-item'>You currently have no skills attached to your account. Use the Add Skills button to attach skills to your account.</div>
+        {% endfor %}
+      <div class="profile-footer">
+        <a href="{% url 'Seekers:AddSkills' %}"><button type="submit" class="btn btn-primary">Add A Skill</button></a>
+        <a href="{% url 'Seekers:UserApplication' %}"><button type="submit" class="btn btn-primary">My Applications</button></a>
+      </div>
 
-                {% elif perms.recruiters.is_recruiter %}
-                <div class='profile-listing-row header'>
-                        <div class='profile-listing-description'> <h3> Job Title </h3> </div>
-                        <div class='profile-listing-description'> <h3> Location </h3> </div>
-                        <div class='profile-listing-description'> <h3> Contract </h3> </div>
-                        <div class='profile-listing-description'> <h3> Length </h3> </div>
-                        <div class='profile-listing-button'></div>
-                        <div class='profile-listing-button'></div>
-                </div>
-                {% for job in jobs %}
-                    <div class='profile-listing-row'>
-                        <div class='profile-listing-description'> {{ job.listing_job_title }} </div>
-                        <div class='profile-listing-description'> {{ job.location }} </div>
-                        <div class='profile-listing-description'> {{ job.contract_type }} </div>
-                        <div class='profile-listing-description'> {{ job.contract_length}} </div>
-                        <div class='profile-listing-button'><a href={% url 'Recruiters:EditListing' ListingID=job.pk %}><button type=button class="btn btn-primary">Edit</button></a></div>
-                        <div class='profile-listing-button'><a href={% url 'Recruiters:DeleteListing' ListingID=job.pk %}><button class="btn btn-primary" type=button>Delete</button></a></div>
-                    </div>
-                {% empty %}
-                    <p>You currently have no jobs posted. Use the Add a Job button to post one!</p>
-                {% endfor %}
-                <div class="profile-footer">
-                <a href="{% url 'Recruiters:CreateJob' %}"><button type="submit" class="btn btn-primary">Add A Job</button></a>
-                </div>
-                {% endif %}
+      {% elif perms.recruiters.is_recruiter %}
+      <div class='profile-listing-row header'>
+        <div class='profile-listing-description'> <h3> Job Title </h3> </div>
+        <div class='profile-listing-description'> <h3> Location </h3> </div>
+        <div class='profile-listing-description'> <h3> Contract </h3> </div>
+        <div class='profile-listing-description'> <h3> Length </h3> </div>
+        <div class='profile-listing-button'></div>
+        <div class='profile-listing-button'></div>
+      </div>
+      {% for job in jobs %}
+        <div class='profile-listing-row'>
+          <div class='profile-listing-description'> {{ job.listing_job_title }} </div>
+          <div class='profile-listing-description'> {{ job.location }} </div>
+          <div class='profile-listing-description'> {{ job.contract_type }} </div>
+          <div class='profile-listing-description'> {{ job.contract_length}} </div>
+          <div class='profile-listing-button'><a href={% url 'Recruiters:EditListing' ListingID=job.pk %}><button type=button class="btn btn-primary">Edit</button></a></div>
+          <div class='profile-listing-button'><a href={% url 'Recruiters:DeleteListing' ListingID=job.pk %}><button class="btn btn-primary" type=button>Delete</button></a></div>
         </div>
+      {% empty %}
+        <p>You currently have no jobs posted. Use the Add a Job button to post one!</p>
+      {% endfor %}
+      <div class="profile-footer">
+        <a href="{% url 'Recruiters:CreateJob' %}"><button type="submit" class="btn btn-primary">Add A Job</button></a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
 </div>
 {% endblock header %}
 

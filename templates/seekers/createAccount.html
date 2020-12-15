@@ -15,28 +15,28 @@
 
 {% block firstSection %}
 
-    <form enctype="multipart/form-data" action= "{% url 'Seekers:CreateAccount' AccountType=AccType%}" method='POST' style="border:1px solid #ccc">
-        <div class="container">
-        <h4>Please fill in this form to create an account.</h4>
-        <hr>
+<form enctype="multipart/form-data" action= "{% url 'Seekers:CreateAccount' AccountType=AccType%}" method='POST' style="border:1px solid #ccc">
+  <div class="container">
+  <h4>Please fill in this form to create an account.</h4>
+  <hr>
 
-        {% csrf_token %}
+  {% csrf_token %}
 
-        {{ form.non_field_errors }}
+  {{ form.non_field_errors }}
 
-        {% for field in form %}
-            {{ field.label_tag}}
-            {{ field }}
-            {{ field.errors }}
-            <br>
-        {% endfor %}
-    
-    
-        <div class="clearfix">
-            <button type="submit" class="btn btn-primary">Sign Up</button>
-            <a href="{% url 'Seekers:Login' %}"><button type="button" class="btn btn-primary">Cancel</button></a>
-        </div>
-        </div>
-    </form>
+  {% for field in form %}
+    {{ field.label_tag}}
+    {{ field }}
+    {{ field.errors }}
+    <br>
+  {% endfor %}
+
+
+  <div class="clearfix">
+    <button type="submit" class="btn btn-primary">Sign Up</button>
+    <a href="{% url 'Seekers:Login' %}"><button type="button" class="btn btn-primary">Cancel</button></a>
+  </div>
+  </div>
+</form>
 
 {% endblock %}

@@ -2,12 +2,12 @@
 {% load static %}
 
 {% block nameOfTab %}
-<title>My Applications</title>
+  <title>My Applications</title>
 {% endblock %}
 
 {% block header %}
 <div class="container">
-    <h1>APPLICATIONS</h1>
+  <h1>APPLICATIONS</h1>
 </div>
 {% endblock %}
 
@@ -15,16 +15,16 @@
 {% block firstSection %}
 
 <div class="container">
-    <div class="row rowForJobListings" style="border:groove black">
-        <h3>Applications for {{ seeker.user.first_name }} {{ seeker.user.last_name }}</h3>
-        <br>
-        <ul>
-            {% for application in applications %}
-                <p>{{ forloop.counter }}. You applied for the {{ application.listing}} job on {{ application.date_applied}}</p>
-            {% endfor %}
-            <h5>Your current number of applications: {{ applications|length}} </h5>
-        </ul>
-    </div>
-    <a href="{% url 'Seekers:Profile' Type='seeker' userID=request.user.pk %}"><button type="button" class="btn btn-primary">Back</button></a>
+  <div class="row rowForJobListings" style="border:groove black">
+    <h3>Applications for {{ seeker.user.first_name }} {{ seeker.user.last_name }}</h3>
+    <br>
+    <ul>
+      {% for application in applications %}
+          <p>{{ forloop.counter }}. You applied for the {{ application.listing}} job on {{ application.date_applied}}</p>
+      {% endfor %}
+      <h5>Your current number of applications: {{ applications|length}} </h5>
+    </ul>
+  </div>
+  <a href="{% url 'Seekers:Profile' Type='seeker' userID=request.user.pk %}"><button type="button" class="btn btn-primary">Back</button></a>
 </div>
 {% endblock %}
